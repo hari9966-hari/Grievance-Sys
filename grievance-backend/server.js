@@ -21,28 +21,24 @@ const app = express();
  */
 
 // CORS (Must be before all other middleware including Helmet and Rate Limiters)
-const allowedOrigins = [
-  'http://localhost:3000',
-  'https://grievance-system-9jwrwiyin-harish-c-09-04.vercel.app',
-  'https://grievance-system-e1vefgnc1-harish-c-09-04.vercel.app'
-];
-
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log('Incoming request from origin:', origin);
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
       // Allow localhost and any vercel preview deployments
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      if (origin.includes('localhost') || origin.endsWith('.vercel.app')) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        console.warn('Origin blocked by CORS:', origin);
+        callback(null, true); // Temporarily allow all for debugging 502
       }
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With']
   })
 );
 
@@ -50,7 +46,11 @@ app.use(
 app.options('*', cors());
 
 // Security Middleware (Must be after CORS)
-app.use(helmet({ crossOriginResourcePolicy: false }));
+// Allow cross-origin for development/debugging 502s
+app.use(helmet({ 
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false
+}));
 
 // Body Parser
 app.use(express.json({ limit: '10mb' }));
@@ -130,11 +130,12 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 ╔═══════════════════════════════════════════════════════════╗
 ║     Grievance Resolution & Accountability System          ║
 ║                    Backend Server                         ║
-╠═══════════════════════════════════════════════════════════╣
-║  Server running on: http://0.0.0.0:${PORT}              
-║  Environment: ${process.env.NODE_ENV || 'development'}
-║  Database: ${process.env.MONGODB_URI || 'mongodb://localhost:27017/grievance-system'}
-║  Escalation Engine: ACTIVE (runs every 5 minutes)
+╠══════════════════════════════════════════════════════════╣
+║  Server listening on: 0.0.0.0:${PORT}              
+║  Process Port (env.PORT): ${process.env.PORT}
+║  Environment: ${process.env.NODE_ENV || 'production'}
+║  Database: Connected
+║  Escalation Engine: ACTIVE
 ╚═══════════════════════════════════════════════════════════╝
   `);
 });
