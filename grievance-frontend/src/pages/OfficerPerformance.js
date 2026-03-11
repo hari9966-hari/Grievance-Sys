@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { complaintAPI } from '../services/api';
 import DashboardCard from '../components/ui/DashboardCard';
 import { Activity, Clock, ShieldCheck, AlertCircle } from 'lucide-react';

@@ -107,9 +107,9 @@ export default function LandingPage() {
             <span className="text-lg font-bold text-neutral-900">Grievance Sys</span>
           </div>
           <div className="flex space-x-6">
-            <a href="#" className="text-neutral-500 hover:text-primary-600 transition-colors">Help Center</a>
-            <a href="#" className="text-neutral-500 hover:text-primary-600 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-neutral-500 hover:text-primary-600 transition-colors">Terms of Service</a>
+            <a href="/#" className="text-neutral-500 hover:text-primary-600 transition-colors">Help Center</a>
+            <a href="/#" className="text-neutral-500 hover:text-primary-600 transition-colors">Privacy Policy</a>
+            <a href="/#" className="text-neutral-500 hover:text-primary-600 transition-colors">Terms of Service</a>
           </div>
         </div>
       </footer>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { complaintAPI } from '../services/api';
 import { formatDistanceToNow } from 'date-fns';
-import { Clock, AlertCircle, CheckCircle, Activity, Edit3 } from 'lucide-react';
+import { Clock, AlertCircle, CheckCircle, Edit3 } from 'lucide-react';
 import DashboardCard from '../components/ui/DashboardCard';
 import Modal from '../components/ui/Modal';
 

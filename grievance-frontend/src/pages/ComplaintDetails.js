@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { complaintAPI } from '../services/api';
 import { formatDistanceToNow, format } from 'date-fns';
-import { ArrowLeft, User, MapPin, Tag, Calendar, Shield, Clock, AlertTriangle, Image as ImageIcon, Activity } from 'lucide-react';
+import { ArrowLeft, User, MapPin, Calendar, Shield, Clock, AlertTriangle, Image as ImageIcon, Activity } from 'lucide-react';
 import StatusBadge from '../components/ui/StatusBadge';
 import Timeline from '../components/ui/Timeline';
 
