@@ -113,7 +113,9 @@ export const LoginPage = () => {
             >
               {loading ? 'Signing in...' : 'Sign in'}
               {!loading && <ArrowRight className="h-4 w-4" />}
-            </button>        </div>
+            </button>
+          </form>
+        </div>
         
         <p className="mt-8 text-center text-sm text-neutral-500">
           Not a member?{' '}
