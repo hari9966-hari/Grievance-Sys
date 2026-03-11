@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { adminAPI } from '../services/api';
 import DashboardCard from '../components/ui/DashboardCard';
-import { Activity, Clock, ShieldCheck, AlertCircle, Users } from 'lucide-react';
+import { Activity, Clock, ShieldCheck, Users } from 'lucide-react';
 
 export const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);

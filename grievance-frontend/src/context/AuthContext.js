@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       fetchMe();
     }
-  }, [token]);
+  }, [token, fetchMe]);
 
   const fetchMe = useCallback(async () => {
     try {

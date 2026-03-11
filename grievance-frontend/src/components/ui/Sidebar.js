@@ -3,9 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { 
   Home, 
-  FileText, 
   PlusCircle, 
-  Settings, 
   LogOut,
   Users,
   BarChart2,
