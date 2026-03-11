@@ -24,12 +24,28 @@ const app = express();
 app.use(helmet());
 
 // CORS
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://grievance-system-9jwrwiyin-harish-c-09-04.vercel.app',
+  'https://grievance-system-e1vefgnc1-harish-c-09-04.vercel.app'
+];
+
 app.use(
   cors({
-    origin: true,
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      // Allow localhost and any vercel preview deployments
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
   })
 );
 
