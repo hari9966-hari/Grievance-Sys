@@ -20,10 +20,7 @@ const app = express();
  * Middleware Setup
  */
 
-// Security Middleware
-app.use(helmet());
-
-// CORS
+// CORS (Must be before all other middleware including Helmet and Rate Limiters)
 const allowedOrigins = [
   'http://localhost:3000',
   'https://grievance-system-9jwrwiyin-harish-c-09-04.vercel.app',
@@ -48,6 +45,12 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
   })
 );
+
+// Pre-flight OPTIONS handler for all routes explicitly
+app.options('*', cors());
+
+// Security Middleware (Must be after CORS)
+app.use(helmet({ crossOriginResourcePolicy: false }));
 
 // Body Parser
 app.use(express.json({ limit: '10mb' }));
