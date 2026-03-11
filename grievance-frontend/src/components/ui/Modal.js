@@ -17,12 +17,20 @@ export default function Modal({ isOpen, onClose, title, children }) {
         {/* Trick to center modal on desktop */}
         <span className="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
 
-        <div className="inline-block transform overflow-hidden rounded-2xl bg-white text-left align-bottom shadow-card transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle animate-slide-in">
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div className="inline-block transform overflow-hidden rounded-2xl bg-white text-left align-bottom shadow-card transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle animate-slide-in border border-neutral-100">
+          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 relative">
+            <button 
+              onClick={onClose}
+              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 transition-colors p-1 rounded-lg hover:bg-neutral-100"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <div className="sm:flex sm:items-start">
               <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 {title && (
-                  <h3 className="text-lg font-medium leading-6 text-neutral-900 mb-4" id="modal-title">
+                  <h3 className="text-xl font-bold leading-6 text-neutral-900 mb-6 tracking-tight" id="modal-title">
                     {title}
                   </h3>
                 )}

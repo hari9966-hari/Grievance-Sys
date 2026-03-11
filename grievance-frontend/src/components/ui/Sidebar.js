@@ -71,14 +71,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 to={link.to}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-colors ${
+                  `flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
                     isActive
-                      ? 'bg-primary-50 text-primary-700'
+                      ? 'bg-primary-600 text-white shadow-soft shadow-primary-200 translate-x-1'
                       : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
                   }`
                 }
               >
-                <link.icon className={`mr-3 h-5 w-5 flex-shrink-0`} strokeWidth={2} />
+                <link.icon className={`mr-3 h-5 w-5 flex-shrink-0`} strokeWidth={2.5} />
                 {link.label}
               </NavLink>
             ))}

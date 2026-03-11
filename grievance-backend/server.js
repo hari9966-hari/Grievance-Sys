@@ -21,19 +21,23 @@ const app = express();
  */
 
 // CORS (Must be before all other middleware including Helmet and Rate Limiters)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://grievance-system-9jwrwiyin-harish-c-09-04.vercel.app',
+  'https://grievance-system-e1vefgnc1-harish-c-09-04.vercel.app'
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      console.log('Incoming request from origin:', origin);
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      // Allow localhost and any vercel preview deployments
-      if (origin.includes('localhost') || origin.endsWith('.vercel.app')) {
+      // Allow localhost and specified vercel preview deployments
+      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
         callback(null, true);
       } else {
-        console.warn('Origin blocked by CORS:', origin);
-        callback(null, true); // Temporarily allow all for debugging 502
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true,
@@ -130,12 +134,10 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 ╔═══════════════════════════════════════════════════════════╗
 ║     Grievance Resolution & Accountability System          ║
 ║                    Backend Server                         ║
-╠══════════════════════════════════════════════════════════╣
-║  Server listening on: 0.0.0.0:${PORT}              
-║  Process Port (env.PORT): ${process.env.PORT}
-║  Environment: ${process.env.NODE_ENV || 'production'}
-║  Database: Connected
-║  Escalation Engine: ACTIVE
+╠═══════════════════════════════════════════════════════════╣
+║  Port: ${PORT} | Mode: ${process.env.NODE_ENV || 'production'}
+║  Status: ONLINE | Database: CONNECTED
+║  Escalation Engine: ACTIVE (every 5 mins)
 ╚═══════════════════════════════════════════════════════════╝
   `);
 });
