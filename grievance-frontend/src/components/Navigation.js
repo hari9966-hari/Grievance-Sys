@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { FiLogOut, FiHome, FiUser } from 'react-icons/fi';
+import { FiLogOut, FiHome } from 'react-icons/fi';
 
 export const Navigation = () => {
   const { user, logout, isAuthenticated } = useAuth();

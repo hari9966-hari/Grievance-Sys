@@ -10,12 +10,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Initialize user on app load
-  useEffect(() => {
-    if (token) {
-      fetchMe();
-    }
-  }, [token, fetchMe]);
 
   const fetchMe = useCallback(async () => {
     try {
@@ -31,6 +25,13 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   }, []);
+
+  // Initialize user on app load
+  useEffect(() => {
+    if (token) {
+      fetchMe();
+    }
+  }, [token, fetchMe]);
 
   const login = useCallback(async (email, password) => {
     try {
