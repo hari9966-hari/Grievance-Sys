@@ -116,22 +116,7 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-neutral-200" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-neutral-500">Demo Credentials</span>
-              </div>
-            </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-2 text-xs text-neutral-600 bg-neutral-50 p-4 rounded-xl border border-neutral-100 font-mono">
-              <p><span className="font-semibold text-neutral-900">Citizen:</span> citizen@example.com / password</p>
-              <p><span className="font-semibold text-neutral-900">Officer:</span> officer@example.com / password</p>
-              <p><span className="font-semibold text-neutral-900">Admin:</span> admin@test.com / password</p>
-            </div>
-          </div>
         </div>
         
         <p className="mt-8 text-center text-sm text-neutral-500">

@@ -408,7 +408,7 @@ exports.getAnalytics = async (req, res, next) => {
         totalComplaints,
         resolvedComplaints,
         escalatedComplaints,
-        resolutionRate: ((resolvedComplaints / totalComplaints) * 100).toFixed(2),
+        resolutionRate: totalComplaints > 0 ? ((resolvedComplaints / totalComplaints) * 100).toFixed(2) : "0.00",
         averageResolutionTime,
         departmentStats,
         officerStats,
