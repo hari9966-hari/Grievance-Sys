@@ -125,13 +125,13 @@ app.use(errorHandler);
  */
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║     Grievance Resolution & Accountability System          ║
 ║                    Backend Server                         ║
 ╠═══════════════════════════════════════════════════════════╣
-║  Server running on: http://localhost:${PORT}              
+║  Server running on: http://0.0.0.0:${PORT}              
 ║  Environment: ${process.env.NODE_ENV || 'development'}
 ║  Database: ${process.env.MONGODB_URI || 'mongodb://localhost:27017/grievance-system'}
 ║  Escalation Engine: ACTIVE (runs every 5 minutes)
