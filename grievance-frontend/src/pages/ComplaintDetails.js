@@ -221,7 +221,7 @@ export const ComplaintDetails = () => {
               </h2>
               <div className="relative aspect-video rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200">
                 <img 
-                  src={`http://localhost:5000${complaint.imageUrl}`} 
+                  src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${complaint.imageUrl}`} 
                   alt="Complaint Evidence" 
                   className="w-full h-full object-cover"
                   onError={(e) => {
