@@ -41,7 +41,8 @@ const userSchema = new mongoose.Schema(
         'Electricity',
         'Parks & Recreation',
         'Transportation',
-        'Other'
+        'Other',
+        null
       ],
       default: null
     },
