@@ -406,6 +406,9 @@ exports.getAnalytics = async (req, res, next) => {
     const openComplaints = await Complaint.countDocuments({ status: 'Open' });
     const inProgressComplaints = await Complaint.countDocuments({ status: 'In Progress' });
     const verifiedComplaints = await Complaint.countDocuments({ status: 'Verified' });
+    
+    console.log(`Analytics Debug: Open=${openComplaints}, InProgress=${inProgressComplaints}, Resolved=${resolvedComplaints}`);
+    
     // "Pending" is used by frontend and maps to Open + In Progress + Verified
     const pendingComplaints = openComplaints + inProgressComplaints + verifiedComplaints;
 
