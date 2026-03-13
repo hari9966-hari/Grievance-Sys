@@ -35,7 +35,6 @@ const upload = multer({
 router.post(
   '/',
   protect,
-  verifyEmailRequired,
   upload.single('image'),
   [
     body('title').trim().notEmpty().withMessage('Title is required'),
