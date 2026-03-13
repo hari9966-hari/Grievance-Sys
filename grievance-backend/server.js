@@ -95,9 +95,10 @@ startDailyAnalyticsJob();
 
 // Health Check
 app.get('/api/health', (req, res) => {
+  res.setHeader('X-Deployment-Version', 'V1.0.9-FORCED-BYPASS');
   res.status(200).json({
     success: true,
-    message: 'Server is running - V1.0.8',
+    message: 'Server is running - V1.0.9 (No Email Check)',
     timestamp: new Date().toISOString()
   });
 });
