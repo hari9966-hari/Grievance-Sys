@@ -94,13 +94,11 @@ startDailyAnalyticsJob();
  */
 
 // Health Check
-app.get('/api/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Server is running',
+    message: 'Server is running - V1.0.7',
     timestamp: new Date().toISOString()
   });
-});
 
 // Auth Routes
 app.use('/api/auth', authLimiter, authRoutes);
