@@ -41,9 +41,9 @@ const userSchema = new mongoose.Schema(
         'Electricity',
         'Parks & Recreation',
         'Transportation',
-        'Other',
-        null
+        'Other'
       ],
+      required: false,
       default: null
     },
     authorityLevel: {

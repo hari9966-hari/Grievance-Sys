@@ -354,6 +354,8 @@ exports.getAnalytics = async (req, res, next) => {
   try {
     // Total complaints
     const totalComplaints = await Complaint.countDocuments();
+    console.log(`Analytics Debug: totalComplaints = ${totalComplaints}`);
+    
     const resolvedComplaints = await Complaint.countDocuments({ status: 'Resolved' });
     const escalatedComplaints = await Complaint.countDocuments({ status: 'Escalated' });
     const averageResolutionTime = await calculateAverageResolutionTime();
@@ -373,6 +375,7 @@ exports.getAnalytics = async (req, res, next) => {
         }
       }
     ]);
+    console.log(`Analytics Debug: departmentStats length = ${departmentStats.length}`);
 
     // Officer performance
     const officerStats = await User.aggregate([

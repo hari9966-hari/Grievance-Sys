@@ -32,7 +32,7 @@ exports.register = async (req, res, next) => {
       email,
       password,
       role: role === 'officer' ? 'officer' : 'citizen',
-      department: role === 'officer' ? department : null,
+      department: role === 'officer' ? department : undefined, // Let Mongoose handle the default
       authorityLevel: role === 'officer' ? 1 : 0,
       emailVerified: false // Require email verification
     });

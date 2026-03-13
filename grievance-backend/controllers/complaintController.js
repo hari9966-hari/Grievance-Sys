@@ -136,6 +136,8 @@ exports.createComplaint = async (req, res, next) => {
       after: complaint
     });
 
+    console.log(`Complaint Created Successfully: ${complaint._id} by ${userId}`);
+
     res.status(201).json({
       success: true,
       message: 'Complaint created successfully',
