@@ -38,6 +38,9 @@ const userSchema = new mongoose.Schema(
         'Public Health',
         'Education',
         'Police',
+        'Electricity',
+        'Parks & Recreation',
+        'Transportation',
         'Other'
       ],
       default: null

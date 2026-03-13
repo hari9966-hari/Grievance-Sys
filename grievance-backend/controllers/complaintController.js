@@ -66,12 +66,17 @@ exports.createComplaint = async (req, res, next) => {
     }
 
     // Get SLA deadline
-    const slaRule = await SLARule.findOne({ category });
+    let slaRule = await SLARule.findOne({ category });
+    
+    // Fallback if no specific rule found
     if (!slaRule) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid category selected'
-      });
+      console.warn(`No SLA rule found for category: ${category}. Using default fallback (72 hours).`);
+      // Create a transient rule object for logic consistency
+      slaRule = {
+        timeLimitInHours: 72,
+        priority: 'Medium',
+        verifyWithinHours: 24
+      };
     }
 
     const slaDeadline = new Date(Date.now() + slaRule.timeLimitInHours * 60 * 60 * 1000);

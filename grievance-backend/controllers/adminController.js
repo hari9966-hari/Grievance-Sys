@@ -399,6 +399,18 @@ exports.getAnalytics = async (req, res, next) => {
       }
     ]);
 
+    // Detailed status counts for pie chart
+    const openComplaints = await Complaint.countDocuments({ status: 'Open' });
+    const inProgressComplaints = await Complaint.countDocuments({ status: 'In Progress' });
+    const verifiedComplaints = await Complaint.countDocuments({ status: 'Verified' });
+    // "Pending" is used by frontend and maps to Open + In Progress + Verified
+    const pendingComplaints = openComplaints + inProgressComplaints + verifiedComplaints;
+
+    // User counts
+    const totalUsers = await User.countDocuments();
+    const totalOfficers = await User.countDocuments({ role: 'officer' });
+    const activeCitizens = await User.countDocuments({ role: 'citizen', isActive: true });
+
     // Recurring issues
     const recurringIssues = await Complaint.countDocuments({ isRecurring: true });
 
@@ -408,6 +420,13 @@ exports.getAnalytics = async (req, res, next) => {
         totalComplaints,
         resolvedComplaints,
         escalatedComplaints,
+        openComplaints,
+        inProgressComplaints,
+        verifiedComplaints,
+        pendingComplaints,
+        totalUsers,
+        totalOfficers,
+        activeCitizens,
         resolutionRate: totalComplaints > 0 ? ((resolvedComplaints / totalComplaints) * 100).toFixed(2) : "0.00",
         averageResolutionTime,
         departmentStats,
