@@ -18,7 +18,6 @@ const OfficerDashboard = () => {
   const [updateStatus, setUpdateStatus] = useState('');
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({});
 
   const fetchComplaints = async (filterParams = {}) => {
     try {
@@ -47,7 +46,6 @@ const OfficerDashboard = () => {
   }, []);
 
   const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
     fetchComplaints(newFilters);
   };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, X, ChevronDown, Calendar } from 'lucide-react';
+import { Search, Filter, X, ChevronDown } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 const FilterBar = ({ onFilterChange, categories = [] }) => {

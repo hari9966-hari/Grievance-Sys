@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { systemAPI } from '../services/api';
 import { useLanguage } from '../context/LanguageContext';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import { Shield, CheckCircle, Activity, Clock, ArrowRight, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -11,7 +10,7 @@ import { Link } from 'react-router-dom';
 const PublicStats = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -38,7 +37,6 @@ const PublicStats = () => {
     );
   }
 
-  const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 space-y-12">

@@ -7,7 +7,7 @@ import { useNotification } from '../context/NotificationContext';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const { login, loading, error } = useAuth();
   const { showNotification } = useNotification();
   const [showPassword, setShowPassword] = useState(false);

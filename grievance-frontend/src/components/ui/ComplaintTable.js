@@ -9,7 +9,7 @@ export default function ComplaintTable({
   actions,
   emptyStateMessage = "" 
 }) {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const emptyMessage = emptyStateMessage || (language === 'en' ? "No complaints found." : "புகார்கள் எதுவும் இல்லை.");
   
   if (!complaints || complaints.length === 0) {

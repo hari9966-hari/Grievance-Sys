@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 const EscalationWatch = () => {
   const [watchList, setWatchList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {

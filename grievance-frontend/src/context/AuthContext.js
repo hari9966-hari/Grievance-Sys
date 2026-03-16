@@ -1,4 +1,4 @@
-import React, { createContext, useState, useCallback, useEffect, useContext } from 'react';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 import Cookie from 'js-cookie';
 import { authAPI } from '../services/api';
 import { useNotification } from './NotificationContext';

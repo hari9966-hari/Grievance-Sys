@@ -6,7 +6,7 @@ import { Trophy, Medal, Star, Shield, TrendingUp } from 'lucide-react';
 const Leaderboard = () => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
