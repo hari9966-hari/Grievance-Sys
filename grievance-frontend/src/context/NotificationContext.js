@@ -5,6 +5,10 @@ const NotificationContext = createContext();
 export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
 
+  const removeNotification = useCallback((id) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  }, []);
+
   const showNotification = useCallback((message, type = 'info', duration = 5000) => {
     const id = Date.now() + Math.random();
     
@@ -16,10 +20,6 @@ export const NotificationProvider = ({ children }) => {
       }, duration);
     }
   }, [removeNotification]);
-
-  const removeNotification = useCallback((id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  }, []);
 
   return (
     <NotificationContext.Provider value={{ notifications, showNotification, removeNotification }}>
