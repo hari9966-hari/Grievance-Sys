@@ -103,7 +103,9 @@ const translations = {
       registerBtn: 'Register',
       registering: 'Creating Account...',
       alreadyAccount: 'Already have an account?',
-      loginHere: 'Login here'
+      loginHere: 'Login here',
+      loginSuccess: 'Login successful!',
+      registerSuccess: 'Account created successfully!'
     },
     // Admin
     admin: {
@@ -254,7 +256,9 @@ const translations = {
       registerBtn: 'பதிவு செய்யவும்',
       registering: 'கணக்கை உருவாக்குகிறது...',
       alreadyAccount: 'ஏற்கனவே கணக்கு உள்ளதா?',
-      loginHere: 'இங்கே உள்நுழையவும்'
+      loginHere: 'இங்கே உள்நுழையவும்',
+      loginSuccess: 'உள்நுழைவு வெற்றிகரமாக முடிந்தது!',
+      registerSuccess: 'கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது!'
     },
     // Admin
     admin: {

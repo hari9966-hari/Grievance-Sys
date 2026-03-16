@@ -50,7 +50,7 @@ export const RegisterPage = () => {
     });
 
     if (result.success) {
-      showNotification('Account created successfully!', 'success');
+      showNotification(t('auth.registerSuccess') || 'Account created successfully!', 'success');
       const role = result.user?.role;
       if (role === 'citizen') navigate('/citizen/dashboard');
       else if (role === 'officer') navigate('/officer/dashboard');
