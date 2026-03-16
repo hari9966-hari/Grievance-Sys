@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // Trigger restart for port change
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -12,6 +12,8 @@ const { startDailyAnalyticsJob } = require('./cron/dailyAnalytics');
 const authRoutes = require('./routes/authRoutes');
 const complaintRoutes = require('./routes/complaintRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const systemRoutes = require('./routes/systemRoutes');
 
 // Initialize Express App
 const app = express();
@@ -33,10 +35,13 @@ app.use(
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
-      // Allow localhost and specified vercel preview deployments
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      // Allow localhost (various ports) and specified vercel preview deployments
+      const isLocalhost = /^http:\/\/localhost(:\d+)?$/.test(origin) || /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin);
+      
+      if (isLocalhost || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
         callback(null, true);
       } else {
+        console.log('Rejected origin:', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -111,6 +116,12 @@ app.use('/api/complaints', complaintRoutes);
 
 // Admin Routes
 app.use('/api/admin', adminRoutes);
+
+// Notification Routes
+app.use('/api/notifications', notificationRoutes);
+
+// System (Public) Routes
+app.use('/api/system', systemRoutes);
 
 // 404 Handler
 app.use((req, res) => {

@@ -359,6 +359,19 @@ exports.getAnalytics = async (req, res, next) => {
     const resolvedComplaints = await Complaint.countDocuments({ status: 'Resolved' });
     const escalatedComplaints = await Complaint.countDocuments({ status: 'Escalated' });
     const averageResolutionTime = await calculateAverageResolutionTime();
+    
+    // CSAT Stats
+    const csatStats = await Complaint.aggregate([
+      { $match: { rating: { $ne: null } } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalRatings: { $sum: 1 }
+        }
+      }
+    ]);
+    const averageRating = csatStats.length > 0 ? csatStats[0].averageRating.toFixed(1) : "0.0";
 
     // Department performance
     const departmentStats = await Complaint.aggregate([
@@ -381,11 +394,28 @@ exports.getAnalytics = async (req, res, next) => {
     const officerStats = await User.aggregate([
       { $match: { role: 'officer' } },
       {
+        $lookup: {
+          from: 'complaints',
+          localField: '_id',
+          foreignField: 'assignedTo',
+          as: 'officerComplaints'
+        }
+      },
+      {
         $project: {
           name: 1,
           department: 1,
           openComplaintCount: 1,
           resolvedComplaintCount: 1,
+          averageRating: {
+            $avg: {
+              $filter: {
+                input: '$officerComplaints.rating',
+                as: 'r',
+                cond: { $ne: ['$$r', null] }
+              }
+            }
+          },
           performanceScore: {
             $cond: [
               { $eq: ['$resolvedComplaintCount', 0] },
@@ -437,7 +467,9 @@ exports.getAnalytics = async (req, res, next) => {
         averageResolutionTime,
         departmentStats,
         officerStats,
-        recurringIssues
+        recurringIssues,
+        averageRating,
+        totalRatings: csatStats.length > 0 ? csatStats[0].totalRatings : 0
       }
     });
   } catch (error) {
@@ -545,3 +577,144 @@ exports.getEscalationReport = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Get Escalation Watch (Complaints nearing SLA)
+ * GET /api/admin/escalation-watch
+ */
+exports.getEscalationWatch = async (req, res, next) => {
+  try {
+    const twentyFourHoursFromNow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    const watchList = await Complaint.find({
+      status: { $in: ['Open', 'Verified', 'In Progress', 'Escalated'] },
+      slaDeadline: { $lte: twentyFourHoursFromNow }
+    })
+      .populate('createdBy', 'name email')
+      .populate('assignedTo', 'name email department')
+      .sort({ slaDeadline: 1 })
+      .limit(50);
+
+    res.status(200).json({
+      success: true,
+      count: watchList.length,
+      watchList
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get Heatmap Data
+ * GET /api/admin/heatmap-data
+ */
+exports.getHeatmapData = async (req, res, next) => {
+  try {
+    const complaints = await Complaint.find({
+      status: { $ne: 'Closed' }
+    }).select('location coordinates priority title');
+
+    // Map to a format suitable for Leaflet
+    const heatmapData = complaints.map(c => {
+      // If coordinates missing, mock them based on location name hash for demo
+      // In a real app, these would be captured at creation or geocoded
+      let lat = c.coordinates?.lat;
+      let lng = c.coordinates?.lng;
+
+      if (!lat || !lng) {
+        // More accurate mock coordinates for demo based on common Tamil Nadu cities
+        const locationLower = c.location.toLowerCase();
+        
+        if (locationLower.includes('chennai')) {
+          lat = 13.0827; lng = 80.2707;
+        } else if (locationLower.includes('coimbatore')) {
+          lat = 11.0168; lng = 76.9558;
+        } else if (locationLower.includes('madurai')) {
+          lat = 9.9252; lng = 78.1198;
+        } else if (locationLower.includes('trichy') || locationLower.includes('tiruchirappalli')) {
+          lat = 10.7905; lng = 78.7047;
+        } else if (locationLower.includes('salem')) {
+          lat = 11.6643; lng = 78.1460;
+        } else {
+          // Deterministic mock coords relative to Chennai but safer (less likely to hit ocean)
+          const hash = c.location.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a; }, 0);
+          lat = 13.0427 + (Math.abs(hash) % 50) * 0.001; 
+          lng = 80.2007 + (Math.abs(hash >> 8) % 50) * 0.001;
+        }
+      }
+
+      const intensity = {
+        'Critical': 1.0,
+        'High': 0.7,
+        'Medium': 0.4,
+        'Low': 0.2
+      }[c.priority] || 0.3;
+
+      return {
+        _id: c._id,
+        lat,
+        lng,
+        intensity,
+        title: c.title,
+        location: c.location
+      };
+    });
+
+    res.status(200).json({
+      success: true,
+      heatmapData
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Get Officer Leaderboard
+ * GET /api/admin/leaderboard
+ */
+exports.getLeaderboard = async (req, res, next) => {
+  try {
+    const leaderboard = await User.aggregate([
+      { $match: { role: 'officer', isActive: true } },
+      {
+        $project: {
+          name: 1,
+          department: 1,
+          resolvedComplaintCount: 1,
+          openComplaintCount: 1,
+          trustScore: 1,
+          resolutionRate: {
+            $cond: [
+              { $eq: [{ $add: ['$resolvedComplaintCount', '$openComplaintCount'] }, 0] },
+              0,
+              {
+                $multiply: [
+                  {
+                    $divide: [
+                      '$resolvedComplaintCount',
+                      { $add: ['$resolvedComplaintCount', '$openComplaintCount'] }
+                    ]
+                  },
+                  100
+                ]
+              }
+            ]
+          }
+        }
+      },
+      { $sort: { resolvedComplaintCount: -1, trustScore: -1 } },
+      { $limit: 10 }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      leaderboard
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+

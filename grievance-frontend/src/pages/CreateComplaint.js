@@ -2,11 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { complaintAPI, authAPI } from '../services/api';
 import FileUpload from '../components/ui/FileUpload';
+import LocationPicker from '../components/ui/LocationPicker';
 import Modal from '../components/ui/Modal';
-import { AlertTriangle, MapPin, Tag, Type, AlignLeft } from 'lucide-react';
+import { AlertTriangle, MapPin, Tag, Type, AlignLeft, ShieldAlert } from 'lucide-react';
+import translations from '../utils/translations';
+import { useLanguage } from '../context/LanguageContext';
+import { useNotification } from '../context/NotificationContext';
 
 export const CreateComplaint = () => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [duplicateModalOpen, setDuplicateModalOpen] = useState(false);
@@ -17,8 +23,13 @@ export const CreateComplaint = () => {
     description: '',
     category: '',
     location: '',
-    image: null
+    severity: 'Medium',
+    image: null,
+    coordinates: null,
+    email: ''
   });
+
+  const severities = ['Low', 'Medium', 'High', 'Critical'];
 
   const categories = [
     'Water Supply',
@@ -39,6 +50,10 @@ export const CreateComplaint = () => {
     setFormData(prev => ({ ...prev, image: file }));
   };
 
+  const handleLocationSelect = (coords) => {
+    setFormData(prev => ({ ...prev, coordinates: coords }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -56,6 +71,14 @@ export const CreateComplaint = () => {
       data.append('description', formData.description);
       data.append('category', formData.category);
       data.append('location', formData.location);
+      data.append('email', formData.email);
+      data.append('priority', formData.severity); // existing field in model is 'priority'
+      
+      if (formData.coordinates) {
+        data.append('lat', formData.coordinates.lat);
+        data.append('lng', formData.coordinates.lng);
+      }
+
       if (formData.image) {
         data.append('image', formData.image);
       }
@@ -63,6 +86,7 @@ export const CreateComplaint = () => {
       const response = await complaintAPI.createComplaint(data);
       
       if (response.data.success) {
+        showNotification('Complaint submitted successfully!', 'success');
         navigate('/citizen/dashboard');
       }
     } catch (err) {
@@ -70,13 +94,30 @@ export const CreateComplaint = () => {
         // Workaround: Trigger verification and retry
         try {
           await authAPI.verifyEmail();
-          // Retry once
+          // Retry logic (redeclaring data for simplicity in catch scope)
+          const data = new FormData();
+          data.append('title', formData.title);
+          data.append('description', formData.description);
+          data.append('category', formData.category);
+          data.append('location', formData.location);
+          data.append('email', formData.email);
+          data.append('priority', formData.severity);
+          
+          if (formData.coordinates) {
+            data.append('lat', formData.coordinates.lat);
+            data.append('lng', formData.coordinates.lng);
+          }
+
+          if (formData.image) data.append('image', formData.image);
+
           const retryResponse = await complaintAPI.createComplaint(data);
           if (retryResponse.data.success) {
+            showNotification('Complaint submitted successfully!', 'success');
             navigate('/citizen/dashboard');
             return;
           }
         } catch (verifyErr) {
+          showNotification('Email verification required. Please check your settings.', 'warning');
           setError('Email verification required. Please check your settings.');
           return;
         }
@@ -88,8 +129,10 @@ export const CreateComplaint = () => {
           title: err.response.data.duplicateComplaintTitle,
           status: err.response.data.duplicateComplaintStatus
         });
+        showNotification('Similar complaint detected in this area.', 'warning');
         setDuplicateModalOpen(true);
       } else {
+        showNotification(err.response?.data?.message || 'Error creating complaint', 'error');
         setError(err.response?.data?.message || 'Error creating complaint');
       }
     } finally {
@@ -103,9 +146,11 @@ export const CreateComplaint = () => {
     try {
       setLoading(true);
       await complaintAPI.supportComplaint(duplicate.id);
+      showNotification('Thank you for supporting this issue!', 'success');
       setDuplicateModalOpen(false);
       navigate('/citizen/dashboard');
     } catch (err) {
+      showNotification('Error supporting complaint', 'error');
       setError('Error supporting complaint');
       setDuplicateModalOpen(false);
     } finally {
@@ -116,8 +161,10 @@ export const CreateComplaint = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-900">Raise Complaint</h1>
-        <p className="text-sm text-neutral-500 mt-1">Submit a new issue to the authorities for rapid resolution.</p>
+        <h1 className="text-2xl font-bold tracking-tight text-neutral-900">{t('nav.createComplaint')}</h1>
+        <p className="text-sm text-neutral-500 mt-1">
+          {language === 'en' ? 'Submit a new issue to the authorities for rapid resolution.' : 'விரைவான தீர்வுக்காக அதிகாரிகளிடம் புதிய புகாரைச் சமர்ப்பிக்கவும்.'}
+        </p>
       </div>
 
       {error && (
@@ -132,7 +179,7 @@ export const CreateComplaint = () => {
         <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
           {/* Title Box */}
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Complaint Title *</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">{t('form.title')} *</label>
             <div className="relative rounded-xl shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Type className="h-4 w-4 text-neutral-400" />
@@ -143,7 +190,7 @@ export const CreateComplaint = () => {
                 value={formData.title}
                 onChange={handleInputChange}
                 className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
-                placeholder="Brief summary of the issue (e.g. Broken Pipe on Main St)"
+                placeholder={language === 'en' ? "Brief summary of the issue (e.g. Broken Pipe on Main St)" : "சிக்கலின் சுருக்கமான விவரம் (எ.கா. மெயின் தெருவில் உடைந்த குழாய்)"}
                 required
               />
             </div>
@@ -151,7 +198,7 @@ export const CreateComplaint = () => {
 
           {/* Category */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Category *</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">{t('form.category')} *</label>
             <div className="relative rounded-xl shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Tag className="h-4 w-4 text-neutral-400" />
@@ -163,9 +210,9 @@ export const CreateComplaint = () => {
                 className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
                 required
               >
-                <option value="">Select category...</option>
+                <option value="">{language === 'en' ? 'Select category...' : 'வகையைத் தேர்ந்தெடுக்கவும்...'}</option>
                 {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat}>{language === 'en' ? cat : (translations.ta.categories?.[cat] || cat)}</option>
                 ))}
               </select>
             </div>
@@ -173,7 +220,7 @@ export const CreateComplaint = () => {
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Location *</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">{t('form.location')} *</label>
             <div className="relative rounded-xl shadow-sm">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <MapPin className="h-4 w-4 text-neutral-400" />
@@ -184,15 +231,68 @@ export const CreateComplaint = () => {
                 value={formData.location}
                 onChange={handleInputChange}
                 className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
-                placeholder="Specific address or landmark"
+                placeholder={language === 'en' ? "Specific address or landmark" : "குறிப்பிட்ட முகவரி அல்லது அடையாளம்"}
                 required
               />
+            </div>
+            
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-neutral-600 mb-2">
+                {language === 'en' ? 'Pin accurate location on map' : 'வரைபடத்தில் துல்லியமான இருப்பிடத்தைக் குறிக்கவும்'}
+              </label>
+              <LocationPicker onLocationSelect={handleLocationSelect} />
+            </div>
+          </div>
+
+          {/* Email for Notifications */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">
+              {language === 'en' ? 'Email for Notifications' : 'அறிவிப்புகளுக்கான மின்னஞ்சல்'}
+            </label>
+            <div className="relative rounded-xl shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg className="h-4 w-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
+                placeholder={language === 'en' ? "Email address to receive updates" : "புதுப்பிப்புகளைப் பெறுவதற்கான மின்னஞ்சல் முகவரி"}
+              />
+            </div>
+            <p className="mt-1.5 text-xs text-neutral-500">
+              {language === 'en' ? 'Leave blank to use your account email.' : 'உங்கள் கணக்கு மின்னஞ்சலைப் பயன்படுத்த இதைக் காலியாக விடவும்.'}
+            </p>
+          </div>
+
+          {/* Severity */}
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">{t('form.severity')} *</label>
+            <div className="relative rounded-xl shadow-sm">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <ShieldAlert className="h-4 w-4 text-neutral-400" />
+              </div>
+              <select
+                name="severity"
+                value={formData.severity}
+                onChange={handleInputChange}
+                className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors font-medium text-primary-700"
+                required
+              >
+                {severities.map(sev => (
+                  <option key={sev} value={sev}>{t(`severity.${sev.toLowerCase()}`)}</option>
+                ))}
+              </select>
             </div>
           </div>
 
           {/* Description */}
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Detailed Description *</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">{t('form.description')} *</label>
             <div className="relative rounded-xl shadow-sm">
               <div className="pointer-events-none absolute top-3 left-3">
                 <AlignLeft className="h-4 w-4 text-neutral-400" />
@@ -203,7 +303,7 @@ export const CreateComplaint = () => {
                 onChange={handleInputChange}
                 rows="4"
                 className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
-                placeholder="Elaborate on the details..."
+                placeholder={language === 'en' ? "Elaborate on the details..." : "விவரங்களை விரிவாகக் கூறவும்..."}
                 required
               />
             </div>
@@ -211,7 +311,7 @@ export const CreateComplaint = () => {
 
           {/* File Upload */}
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-neutral-700 mb-1.5">Photographic Evidence (Optional)</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-1.5">{t('form.uploadImage')}</label>
             <FileUpload onFileSelect={handleFileSelect} />
           </div>
         </div>
@@ -222,14 +322,14 @@ export const CreateComplaint = () => {
             onClick={() => navigate('/citizen/dashboard')}
             className="mr-4 bg-white text-neutral-700 px-6 py-2.5 rounded-xl font-medium border border-neutral-200 shadow-sm hover:bg-neutral-50 transition-colors"
           >
-            Cancel
+            {t('form.cancel')}
           </button>
           <button
             type="submit"
             disabled={loading}
             className="bg-primary-600 text-white px-8 py-2.5 rounded-xl font-medium shadow-soft hover:bg-primary-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all hover:shadow-card"
           >
-            {loading ? 'Submitting...' : 'Submit Complaint'}
+            {loading ? (language === 'en' ? 'Submitting...' : 'சமர்ப்பிக்கிறது...') : t('form.submit')}
           </button>
         </div>
       </form>

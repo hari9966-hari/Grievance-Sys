@@ -3,12 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { complaintAPI } from '../services/api';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ArrowLeft, User, MapPin, Calendar, Shield, Clock, AlertTriangle, Image as ImageIcon, Activity } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 import StatusBadge from '../components/ui/StatusBadge';
 import Timeline from '../components/ui/Timeline';
+import VerificationRating from '../components/ui/VerificationRating';
+import translations from '../utils/translations';
+import { useAuth } from '../context/AuthContext';
 
-export const ComplaintDetails = () => {
+const ComplaintDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
+  const { user: currentUser } = useAuth();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -40,14 +46,14 @@ export const ComplaintDetails = () => {
     return (
       <div className="max-w-3xl mx-auto p-8 text-center bg-white rounded-2xl shadow-soft border border-neutral-100">
         <AlertTriangle className="w-12 h-12 text-warning-500 mx-auto mb-4" />
-        <h2 className="text-xl font-bold text-neutral-900 mb-2">Complaint Not Found</h2>
-        <p className="text-neutral-600 mb-6">{error || "The complaint you're looking for doesn't exist or you don't have permission to view it."}</p>
+        <h2 className="text-xl font-bold text-neutral-900 mb-2">{t('details.notFound')}</h2>
+        <p className="text-neutral-600 mb-6">{error || (language === 'en' ? "The complaint you're looking for doesn't exist or you don't have permission to view it." : "நீங்கள் தேடும் புகார் இல்லை அல்லது அதைப் பார்க்க உங்களுக்கு அனுமதி இல்லை.")}</p>
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center px-4 py-2 bg-neutral-100 text-neutral-700 rounded-lg hover:bg-neutral-200 transition-colors font-medium"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Go Back
+          {language === 'en' ? 'Go Back' : 'பின்செல்லவும்'}
         </button>
       </div>
     );
@@ -57,8 +63,8 @@ export const ComplaintDetails = () => {
   const timelineEvents = [
     {
       id: 1,
-      title: 'Complaint Logged',
-      description: 'The grievance was successfully submitted into the system.',
+      title: language === 'en' ? 'Complaint Logged' : 'புகார் பதிவு செய்யப்பட்டது',
+      description: language === 'en' ? 'The grievance was successfully submitted into the system.' : 'முறைப்பாடு வெற்றிகரமாக அமைப்பில் சமர்ப்பிக்கப்பட்டது.',
       date: new Date(complaint.createdAt).toLocaleString(),
       status: 'completed'
     }
@@ -67,8 +73,8 @@ export const ComplaintDetails = () => {
   if (complaint.assignedTo) {
     timelineEvents.push({
       id: 2,
-      title: 'Resolution Officer Assigned',
-      description: `Assigned to an officer in the ${complaint.category} department.`,
+      title: language === 'en' ? 'Resolution Officer Assigned' : 'தீர்வு அதிகாரி நியமிக்கப்பட்டார்',
+      description: language === 'en' ? `Assigned to an officer in the ${complaint.category} department.` : `${complaint.category} துறையில் உள்ள ஒரு அதிகாரிக்கு ஒதுக்கப்பட்டது.`,
       date: new Date(complaint.createdAt).toLocaleString(), // Mocking date for now
       status: 'completed'
     });
@@ -77,8 +83,8 @@ export const ComplaintDetails = () => {
   if (complaint.status === 'In Progress' || complaint.status === 'Resolved' || complaint.status === 'Verified') {
     timelineEvents.push({
       id: 3,
-      title: 'Investigation In Progress',
-      description: 'The assigned officer has begun investigating the reported issue.',
+      title: language === 'en' ? 'Investigation In Progress' : 'விசாரணை செயல்பாட்டில் உள்ளது',
+      description: language === 'en' ? 'The assigned officer has begun investigating the reported issue.' : 'ஒதுக்கப்பட்ட அதிகாரி புகாரளிக்கப்பட்ட சிக்கலை விசாரிக்கத் தொடங்கியுள்ளார்.',
       date: new Date(new Date(complaint.createdAt).getTime() + 86400000).toLocaleString(), // Mocking date
       status: 'completed'
     });
@@ -87,24 +93,24 @@ export const ComplaintDetails = () => {
   if (complaint.status === 'Escalated') {
     timelineEvents.push({
       id: 4,
-      title: 'Escalated',
-      description: 'SLA breached. Complaint moved to higher authorities.',
+      title: t('status.escalated'),
+      description: language === 'en' ? 'SLA breached. Complaint moved to higher authorities.' : 'SLA மீறப்பட்டது. புகார் உயர் அதிகாரிகளுக்கு மாற்றப்பட்டது.',
       date: new Date(complaint.slaDeadline || new Date()).toLocaleString(),
       status: 'error'
     });
   } else if (complaint.status === 'Resolved' || complaint.status === 'Verified') {
     timelineEvents.push({
       id: 5,
-      title: 'Issue Resolved',
-      description: complaint.resolutionNotes || 'The officer marked this issue as fully resolved.',
+      title: language === 'en' ? 'Issue Resolved' : 'சிக்கல் தீர்க்கப்பட்டது',
+      description: complaint.resolutionNotes || (language === 'en' ? 'The officer marked this issue as fully resolved.' : 'அதிகாரி இந்த சிக்கலை முழுமையாக தீர்க்கப்பட்டதாகக் குறித்தார்.'),
       date: new Date(new Date(complaint.createdAt).getTime() + 172800000).toLocaleString(), // Mocking date
       status: 'completed'
     });
   } else {
     timelineEvents.push({
       id: 99,
-      title: 'Awaiting Resolution',
-      description: 'Authorities are currently processing the next steps.',
+      title: language === 'en' ? 'Awaiting Resolution' : 'தீர்வுக்காக காத்திருக்கிறது',
+      description: language === 'en' ? 'Authorities are currently processing the next steps.' : 'அதிகாரிகள் தற்போது அடுத்த கட்ட நடவடிக்கைகளை மேற்கொண்டு வருகின்றனர்.',
       date: 'Pending',
       status: 'pending'
     });
@@ -119,7 +125,7 @@ export const ComplaintDetails = () => {
           className="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-1.5" />
-          Back to Dashboard
+          {t('details.backToDashboard')}
         </button>
       </div>
 
@@ -136,11 +142,11 @@ export const ComplaintDetails = () => {
                 <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-500">
                   <span className="flex items-center">
                     <User className="w-4 h-4 mr-1.5" />
-                    {complaint.userId?.name || 'Citizen'}
+                    {complaint.createdBy?.name || 'Citizen'}
                   </span>
                   <span className="hidden sm:inline">•</span>
                   <span className="flex items-center text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-md font-medium">
-                    {complaint.category}
+                    {language === 'en' ? complaint.category : (translations.ta.categories?.[complaint.category] || complaint.category)}
                   </span>
                 </div>
               </div>
@@ -150,7 +156,7 @@ export const ComplaintDetails = () => {
             </div>
 
             <div className="prose prose-neutral max-w-none mb-8">
-              <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-2">Description</h3>
+              <h3 className="text-sm font-semibold text-neutral-900 uppercase tracking-wider mb-2">{t('details.description')}</h3>
               <p className="text-neutral-700 whitespace-pre-wrap leading-relaxed border-l-4 border-neutral-200 pl-4 py-1.5">
                 {complaint.description}
               </p>
@@ -160,7 +166,7 @@ export const ComplaintDetails = () => {
               <div>
                 <h3 className="text-sm font-semibold text-neutral-900 mb-1 flex items-center">
                   <MapPin className="w-4 h-4 mr-1.5 text-neutral-400" />
-                  Location
+                  {t('details.location')}
                 </h3>
                 <p className="text-neutral-600">{complaint.location}</p>
               </div>
@@ -168,7 +174,7 @@ export const ComplaintDetails = () => {
               <div>
                 <h3 className="text-sm font-semibold text-neutral-900 mb-1 flex items-center">
                   <Calendar className="w-4 h-4 mr-1.5 text-neutral-400" />
-                  Filed On
+                  {t('details.filedOn')}
                 </h3>
                 <p className="text-neutral-600">
                   {format(new Date(complaint.createdAt), 'PPP p')}
@@ -179,7 +185,7 @@ export const ComplaintDetails = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-neutral-900 mb-1 flex items-center">
                     <Shield className="w-4 h-4 mr-1.5 text-primary-500" />
-                    Assigned Officer
+                    {t('details.assignedOfficer')}
                   </h3>
                   <p className="text-neutral-600 font-medium">{complaint.assignedTo.name}</p>
                   <p className="text-xs text-neutral-400">{complaint.assignedTo.department}</p>
@@ -190,7 +196,7 @@ export const ComplaintDetails = () => {
                 <div>
                   <h3 className="text-sm font-semibold text-neutral-900 mb-1 flex items-center">
                     <Clock className={'w-4 h-4 mr-1.5 ' + (new Date(complaint.slaDeadline) < new Date() ? 'text-danger-500' : 'text-warning-500')} />
-                    SLA Deadline
+                    {t('details.slaDeadline')}
                   </h3>
                   <p className={'font-medium ' + (new Date(complaint.slaDeadline) < new Date() ? 'text-danger-600' : 'text-neutral-600')}>
                     {format(new Date(complaint.slaDeadline), 'PPP p')}
@@ -206,22 +212,22 @@ export const ComplaintDetails = () => {
               <div className="mt-8 pt-6 border-t border-neutral-100">
                 <div className="inline-flex items-center px-3 py-1.5 bg-primary-50 text-primary-700 rounded-lg text-sm font-medium border border-primary-100">
                   <Activity className="w-4 h-4 mr-2" />
-                  Supported by {complaint.upvotes} citizens
+                  {t('details.supportedBy')} {complaint.upvotes} {t('details.citizens')}
                 </div>
               </div>
             )}
           </div>
 
           {/* Evidence/Attachments - Conditionally Rendered */}
-          {complaint.imageUrl && (
+          {complaint.image && (
             <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 p-6 overflow-hidden">
               <h2 className="text-lg font-semibold text-neutral-900 mb-4 flex items-center">
                 <ImageIcon className="w-5 h-5 mr-2 text-neutral-400" />
-                Photographic Evidence
+                {t('details.evidence')}
               </h2>
               <div className="relative aspect-video rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200">
                 <img 
-                  src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${complaint.imageUrl}`} 
+                  src={`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}${complaint.image}`} 
                   alt="Complaint Evidence" 
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -232,21 +238,37 @@ export const ComplaintDetails = () => {
               </div>
             </div>
           )}
+
+          {/* Verification & Rating Section */}
+          {currentUser?._id === complaint.createdBy?._id && 
+            (complaint.status === 'Resolved' || (complaint.status === 'Closed' && !complaint.rating)) && (
+            <VerificationRating 
+              complaintId={complaint._id} 
+              onUpdate={() => {
+                // Refresh complaint data
+                complaintAPI.getComplaintById(id).then(res => setComplaint(res.data.complaint));
+              }} 
+            />
+          )}
         </div>
 
         {/* Right Column: Timeline & Side Info */}
         <div className="space-y-6">
           <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 p-6">
-            <h2 className="text-lg font-semibold text-neutral-900 mb-6">Resolution History</h2>
-            <Timeline events={timelineEvents} />
+            <h2 className="text-lg font-semibold text-neutral-900 mb-6">{t('details.history')}</h2>
+            <Timeline items={timelineEvents} />
           </div>
 
           <div className="bg-primary-50 rounded-2xl p-6 border border-primary-100 flex items-start">
             <AlertTriangle className="w-6 h-6 text-primary-600 mt-0.5 mr-3 shrink-0" />
             <div>
-              <h3 className="text-sm font-bold text-primary-900 mb-1">Accountability Notice</h3>
+              <h3 className="text-sm font-bold text-primary-900 mb-1">
+                {language === 'en' ? 'Accountability Notice' : 'பொறுப்புக்கூறல் அறிவிப்பு'}
+              </h3>
               <p className="text-xs text-primary-800 leading-relaxed">
-                This grievance is tracked against our Service Level Agreement (SLA). The assigned officer is mandated to respond and resolve this within the stipulated timeframe.
+                {language === 'en' 
+                  ? 'This grievance is tracked against our Service Level Agreement (SLA). The assigned officer is mandated to respond and resolve this within the stipulated timeframe.' 
+                  : 'இந்த குறை எமது சேவை நிலை ஒப்பந்தத்திற்கு (SLA) எதிராக கண்காணிக்கப்படுகிறது. ஒதுக்கப்பட்ட அதிகாரி குறிப்பிட்ட காலக்கெடுவுக்குள் பதிலளிக்கவும் தீர்க்கவும் கட்டாயப்படுத்தப்படுகிறார்.'}
               </p>
             </div>
           </div>

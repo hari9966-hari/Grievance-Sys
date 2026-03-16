@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const Complaint = require('../models/Complaint');
 const User = require('../models/User');
 const SLARule = require('../models/SLARule');
+const { sendEmail, templates } = require('../services/emailService');
 
 /**
  * Start Escalation Cron Job
@@ -114,6 +115,14 @@ const escalateComplaint = async (complaint) => {
     }
 
     await complaint.save();
+
+    // Send escalation email to newly assigned officer
+    if (nextOfficer) {
+      sendEmail({
+        email: nextOfficer.email,
+        ...templates.COMPLAINT_ESCALATED(complaint)
+      }).catch(err => console.error(`Failed to send escalation email for ${complaint._id}:`, err));
+    }
 
     console.log(`Escalated Complaint ${complaint._id} from Level ${currentLevel} to ${newLevel}`);
   } catch (error) {

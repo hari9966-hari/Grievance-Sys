@@ -3,6 +3,8 @@ const User = require('../models/User');
 const SLARule = require('../models/SLARule');
 const { generateFileHash, calculateSimilarity } = require('../utils/hashUtils');
 const { createAuditLog } = require('../middleware/audit');
+const { createNotification } = require('./notificationController');
+const { sendEmail, templates } = require('../services/emailService');
 
 /**
  * Create Complaint
@@ -107,6 +109,7 @@ exports.createComplaint = async (req, res, next) => {
       description,
       category,
       location,
+      email: req.body.email,
       createdBy: userId,
       status: 'Open',
       slaDeadline,
@@ -114,7 +117,11 @@ exports.createComplaint = async (req, res, next) => {
       escalationLevel: 0,
       image: imagePath,
       imageHash: imageHash,
-      priority: slaRule.priority || 'Low'
+      priority: slaRule.priority || 'Low',
+      coordinates: req.body.lat && req.body.lng ? {
+        lat: parseFloat(req.body.lat),
+        lng: parseFloat(req.body.lng)
+      } : null
     });
 
     // Update user open complaint count
@@ -136,6 +143,15 @@ exports.createComplaint = async (req, res, next) => {
       after: complaint
     });
 
+    // Send confirmation email
+    const notificationEmail = complaint.email || user.email;
+    if (notificationEmail) {
+      sendEmail({
+        email: notificationEmail,
+        ...templates.COMPLAINT_CREATED(complaint)
+      }).catch(err => console.error('Error sending creation email:', err));
+    }
+
     console.log(`Complaint Created Successfully: ${complaint._id} by ${userId}`);
 
     res.status(201).json({
@@ -143,6 +159,27 @@ exports.createComplaint = async (req, res, next) => {
       message: 'Complaint created successfully',
       complaint
     });
+
+    // Notify appropriate officers (level 1 in the same department)
+    try {
+      const officers = await User.find({ 
+        role: 'officer', 
+        department: category,
+        authorityLevel: 1
+      });
+
+      for (const officer of officers) {
+        await createNotification({
+          recipient: officer._id,
+          type: 'complaint_created',
+          title: 'New Complaint Filed',
+          message: `A new complaint has been filed in your department (${category}): ${title}`,
+          complaintId: complaint._id
+        });
+      }
+    } catch (notifErr) {
+      console.error('Failed to send creation notification:', notifErr);
+    }
   } catch (error) {
     next(error);
   }
@@ -209,6 +246,19 @@ exports.supportComplaint = async (req, res, next) => {
       message: 'Successfully supported complaint',
       complaint
     });
+
+    // Notify creator about support
+    try {
+      await createNotification({
+        recipient: complaint.createdBy,
+        type: 'message_received',
+        title: 'Complaint Supported',
+        message: `Your complaint "${complaint.title}" has received a new supporter. Total supports: ${complaint.duplicateCount}`,
+        complaintId: complaint._id
+      });
+    } catch (notifErr) {
+      console.error('Failed to send support notification:', notifErr);
+    }
   } catch (error) {
     next(error);
   }
@@ -220,7 +270,12 @@ exports.supportComplaint = async (req, res, next) => {
  */
 exports.getComplaints = async (req, res, next) => {
   try {
-    const { status, category, priority, page = 1, limit = 10 } = req.query;
+    const { 
+      status, category, priority, location, 
+      search, dateFrom, dateTo,
+      onlyMine, page = 1, limit = 10 
+    } = req.query;
+    
     const skip = (page - 1) * limit;
 
     let filter = {};
@@ -228,13 +283,28 @@ exports.getComplaints = async (req, res, next) => {
     if (status) filter.status = status;
     if (category) filter.category = category;
     if (priority) filter.priority = priority;
+    if (location) filter.location = { $regex: location, $options: 'i' };
+    
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+      ];
+    }
 
-    // Citizens can now see all complaints (for transparency).
-    // If you want "only mine", add a query flag and filter here.
+    if (dateFrom || dateTo) {
+      filter.createdAt = {};
+      if (dateFrom) filter.createdAt.$gte = new Date(dateFrom);
+      if (dateTo) filter.createdAt.$lte = new Date(dateTo);
+    }
+
+    if (onlyMine === 'true') {
+      filter.createdBy = req.user._id;
+    }
 
     const complaints = await Complaint.find(filter)
-      .populate('createdBy', 'name email')
-      .populate('assignedTo', 'name email')
+      .populate('createdBy', 'name email trustScore')
+      .populate('assignedTo', 'name email department')
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 });
@@ -252,6 +322,7 @@ exports.getComplaints = async (req, res, next) => {
     next(error);
   }
 };
+
 
 /**
  * Get Complaint by ID
@@ -338,6 +409,9 @@ exports.updateComplaintStatus = async (req, res, next) => {
       complaint.resolvedAt = new Date();
       complaint.resolvedBy = req.user._id;
       
+      // NEW: Set verification status to Pending
+      complaint.verificationStatus = 'Pending';
+      
       if (resolutionProof) {
         complaint.resolutionProof = resolutionProof;
         complaint.resolutionProofHash = generateFileHash(Buffer.from(resolutionProof));
@@ -377,6 +451,151 @@ exports.updateComplaintStatus = async (req, res, next) => {
       message: 'Complaint updated successfully',
       complaint
     });
+
+    // Notify citizen about status update
+    try {
+      await createNotification({
+        recipient: complaint.createdBy,
+        type: 'complaint_status_updated',
+        title: 'Complaint Status Updated',
+        message: `The status of your complaint "${complaint.title}" has been updated to ${status}.`,
+        complaintId: complaint._id,
+        data: { status }
+      });
+
+      // If assigned to a new officer, notify them
+      if (status === 'Verified' || (before.assignedTo?.toString() !== complaint.assignedTo?.toString())) {
+        if (complaint.assignedTo) {
+          await createNotification({
+            recipient: complaint.assignedTo,
+            type: 'complaint_status_updated',
+            title: 'Complaint Assigned',
+            message: `A complaint has been assigned to you: ${complaint.title}`,
+            complaintId: complaint._id
+          });
+        }
+      }
+    } catch (notifErr) {
+      console.error('Failed to send status update notification:', notifErr);
+    }
+
+    // Send Email notification for resolution
+    if (status === 'Resolved') {
+      try {
+        const citizen = await User.findById(complaint.createdBy);
+        await sendEmail({
+          email: citizen.email,
+          ...templates.RESOLUTION_VERIFICATION(complaint)
+        });
+      } catch (emailErr) {
+        console.error('Failed to send resolution email:', emailErr);
+      }
+    }
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Verify Resolution (Citizen only)
+ * POST /api/complaints/:id/verify
+ */
+exports.verifyResolution = async (req, res, next) => {
+  try {
+    const { action, feedback } = req.body; // 'Confirm' or 'Reopen'
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({ success: false, message: 'Complaint not found' });
+    }
+
+    if (complaint.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    const before = complaint.toObject();
+
+    if (action === 'Confirm') {
+      complaint.status = 'Closed';
+      complaint.verificationStatus = 'Confirmed';
+      complaint.verificationAt = new Date();
+    } else if (action === 'Reopen') {
+      complaint.status = 'In Progress';
+      complaint.verificationStatus = 'Reopened';
+      complaint.feedback = feedback;
+      
+      // Notify assigned officer
+      if (complaint.assignedTo) {
+        await createNotification({
+          recipient: complaint.assignedTo,
+          type: 'complaint_status_updated',
+          title: 'Complaint Reopened',
+          message: `The citizen has reopened complaint: ${complaint.title}`,
+          complaintId: complaint._id
+        });
+
+        // Send Email to officer
+        try {
+          const officer = await User.findById(complaint.assignedTo);
+          await sendEmail({
+            email: officer.email,
+            ...templates.COMPLAINT_REOPENED(complaint)
+          });
+        } catch (emailErr) {
+          console.error('Failed to send reopen email:', emailErr);
+        }
+      }
+    }
+
+    await complaint.save();
+
+    await createAuditLog({
+      req,
+      action: action === 'Confirm' ? 'VERIFY_RESOLUTION' : 'REOPEN_COMPLAINT',
+      entityType: 'Complaint',
+      entityId: complaint._id,
+      before,
+      after: complaint
+    });
+
+    res.status(200).json({
+      success: true,
+      message: action === 'Confirm' ? 'Resolution confirmed' : 'Complaint reopened',
+      complaint
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Submit Rating (Citizen only)
+ * POST /api/complaints/:id/rate
+ */
+exports.submitRating = async (req, res, next) => {
+  try {
+    const { rating, feedback } = req.body;
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({ success: false, message: 'Complaint not found' });
+    }
+
+    if (complaint.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    complaint.rating = rating;
+    if (feedback) complaint.feedback = feedback;
+
+    await complaint.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Rating submitted successfully',
+      complaint
+    });
   } catch (error) {
     next(error);
   }
@@ -410,6 +629,15 @@ exports.getComplaintStats = async (req, res, next) => {
       { $group: { _id: '$category', count: { $sum: 1 } } }
     ]);
 
+    let averageRating = null;
+    if (req.user.role === 'officer') {
+      const ratingStats = await Complaint.aggregate([
+        { $match: { assignedTo: userId, rating: { $ne: null } } },
+        { $group: { _id: null, avg: { $avg: '$rating' } } }
+      ]);
+      averageRating = ratingStats.length > 0 ? ratingStats[0].avg.toFixed(1) : "0.0";
+    }
+
     res.status(200).json({
       success: true,
       stats: {
@@ -417,7 +645,8 @@ exports.getComplaintStats = async (req, res, next) => {
         resolved,
         pending,
         escalated,
-        byCategory
+        byCategory,
+        averageRating
       }
     });
   } catch (error) {

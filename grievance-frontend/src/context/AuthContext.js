@@ -1,6 +1,7 @@
-import React, { createContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useCallback, useEffect, useContext } from 'react';
 import Cookie from 'js-cookie';
 import { authAPI } from '../services/api';
+import { useNotification } from './NotificationContext';
 
 export const AuthContext = createContext();
 
@@ -9,6 +10,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(Cookie.get('token') || null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showNotification } = useNotification();
 
 
   const fetchMe = useCallback(async () => {
@@ -82,7 +84,8 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setUser(null);
     setError(null);
-  }, []);
+    showNotification('Logged out successfully', 'info');
+  }, [showNotification]);
 
   const value = {
     user,

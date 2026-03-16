@@ -50,6 +50,11 @@ const complaintSchema = new mongoose.Schema(
       enum: ['Open', 'Verified', 'In Progress', 'Resolved', 'Escalated', 'Closed'],
       default: 'Open'
     },
+    verificationStatus: {
+      type: String,
+      enum: ['Not Applicable', 'Pending', 'Confirmed', 'Reopened'],
+      default: 'Not Applicable'
+    },
     currentStage: {
       type: String,
       enum: ['verification', 'response', 'resolution'],
@@ -158,8 +163,29 @@ const complaintSchema = new mongoose.Schema(
       ref: 'User',
       default: null
     },
+    
+    // Citizen Verification & CSAT
+    rating: {
+      type: Number,
+      min: 1,
+      max: 5,
+      default: null
+    },
+    feedback: {
+      type: String,
+      maxlength: [1000, 'Feedback cannot exceed 1000 characters'],
+      default: null
+    },
+    verificationAt: {
+      type: Date,
+      default: null
+    },
 
     // Metadata
+    coordinates: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null }
+    },
     priority: {
       type: String,
       enum: ['Low', 'Medium', 'High', 'Critical'],

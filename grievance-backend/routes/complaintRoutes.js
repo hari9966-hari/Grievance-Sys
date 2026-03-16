@@ -11,7 +11,9 @@ const {
   getComplaintById,
   updateComplaintStatus,
   getComplaintStats,
-  markAsFake
+  markAsFake,
+  verifyResolution,
+  submitRating
 } = require('../controllers/complaintController');
 
 // Configure multer for file uploads
@@ -63,6 +65,18 @@ router.post('/:complaintId/support', protect, supportComplaint);
  * POST /api/complaints/:id/mark-fake
  */
 router.post('/:id/mark-fake', protect, authorize('admin'), markAsFake);
+
+/**
+ * Verify Resolution (Citizen)
+ * POST /api/complaints/:id/verify
+ */
+router.post('/:id/verify', protect, authorize('citizen'), verifyResolution);
+
+/**
+ * Submit Rating (Citizen)
+ * POST /api/complaints/:id/rate
+ */
+router.post('/:id/rate', protect, authorize('citizen'), submitRating);
 
 /**
  * Get All Complaints

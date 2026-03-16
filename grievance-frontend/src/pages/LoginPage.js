@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AlertCircle, Lock, Mail, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { useNotification } from '../context/NotificationContext';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
   const { login, loading, error } = useAuth();
+  const { showNotification } = useNotification();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -22,6 +26,7 @@ export const LoginPage = () => {
     const result = await login(formData.email, formData.password);
     
     if (result.success) {
+      showNotification(t('auth.loginSuccess') || 'Login successful!', 'success');
       setTimeout(() => {
         const role = result.user?.role;
         if (role === 'citizen') navigate('/citizen/dashboard');
@@ -29,6 +34,8 @@ export const LoginPage = () => {
         else if (role === 'admin') navigate('/admin/dashboard');
         else navigate('/');
       }, 100);
+    } else {
+      showNotification(result.message || 'Invalid email or password', 'error');
     }
   };
 
@@ -47,10 +54,10 @@ export const LoginPage = () => {
           </div>
         </div>
         <h2 className="text-center text-3xl font-bold tracking-tight text-neutral-900 mb-2">
-          Welcome back
+          {t('auth.welcome')}
         </h2>
         <p className="text-center text-sm text-neutral-500 mb-8">
-          Sign in to access your dashboard
+          {t('auth.signIn')}
         </p>
 
         <div className="bg-white py-8 px-4 shadow-card sm:rounded-2xl sm:px-10 border border-neutral-100">
@@ -64,7 +71,7 @@ export const LoginPage = () => {
 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-neutral-700">Email address</label>
+              <label className="block text-sm font-medium text-neutral-700">{t('auth.email')}</label>
               <div className="mt-2 relative rounded-xl shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Mail className="h-5 w-5 text-neutral-400" />
@@ -82,7 +89,7 @@ export const LoginPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700">Password</label>
+              <label className="block text-sm font-medium text-neutral-700">{t('auth.password')}</label>
               <div className="mt-2 relative rounded-xl shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Lock className="h-5 w-5 text-neutral-400" />
@@ -111,16 +118,16 @@ export const LoginPage = () => {
               disabled={loading}
               className="flex w-full justify-center items-center gap-2 rounded-xl border border-transparent bg-primary-600 py-3 px-4 text-sm font-semibold text-white shadow-soft hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? t('auth.signingIn') : t('auth.signInBtn')}
               {!loading && <ArrowRight className="h-4 w-4" />}
             </button>
           </form>
         </div>
         
         <p className="mt-8 text-center text-sm text-neutral-500">
-          Not a member?{' '}
+          {t('auth.notMember')}{' '}
           <Link to="/register" className="font-semibold leading-6 text-primary-600 hover:text-primary-500">
-            Register now
+            {t('auth.registerNow')}
           </Link>
         </p>
       </div>

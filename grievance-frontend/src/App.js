@@ -1,8 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { LanguageProvider } from './context/LanguageContext';
+import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/ui/DashboardLayout';
+import ToastContainer from './components/ui/ToastContainer';
 
 // Pages
 import LandingPage from './pages/LandingPage';
@@ -16,6 +19,7 @@ import OfficerPerformance from './pages/OfficerPerformance';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminOfficers from './pages/AdminOfficers';
 import AdminAnalytics from './pages/AdminAnalytics';
+import PublicStats from './pages/PublicStats';
 
 function AppRoutes() {
   return (
@@ -24,6 +28,7 @@ function AppRoutes() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/transparency" element={<PublicStats />} />
 
       {/* Authenticated Dashboard Routes */}
       <Route element={<DashboardLayout />}>
@@ -119,9 +124,14 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AppRoutes />
-      </AuthProvider>
+      <LanguageProvider>
+        <NotificationProvider>
+          <AuthProvider>
+            <AppRoutes />
+            <ToastContainer />
+          </AuthProvider>
+        </NotificationProvider>
+      </LanguageProvider>
     </Router>
   );
 }

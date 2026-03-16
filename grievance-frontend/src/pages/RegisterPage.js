@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { AlertCircle, User, Mail, Lock, Shield, Building, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { useNotification } from '../context/NotificationContext';
+import translations from '../utils/translations';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
+  const { language, t } = useLanguage();
   const { register, loading, error } = useAuth();
+  const { showNotification } = useNotification();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +37,7 @@ export const RegisterPage = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      showNotification('Passwords do not match', 'error');
       return;
     }
 
@@ -45,11 +50,14 @@ export const RegisterPage = () => {
     });
 
     if (result.success) {
+      showNotification('Account created successfully!', 'success');
       const role = result.user?.role;
       if (role === 'citizen') navigate('/citizen/dashboard');
       else if (role === 'officer') navigate('/officer/dashboard');
       else if (role === 'admin') navigate('/admin/dashboard');
       else navigate('/');
+    } else {
+      showNotification(result.message || 'Registration failed', 'error');
     }
   };
 
@@ -68,10 +76,10 @@ export const RegisterPage = () => {
           </div>
         </div>
         <h2 className="text-center text-3xl font-bold tracking-tight text-neutral-900 mb-2">
-          Create Account
+          {t('auth.createAccount')}
         </h2>
         <p className="text-center text-sm text-neutral-500 mb-8">
-          Join the Grievance System platform
+          {t('auth.joinPlatform')}
         </p>
 
         <div className="bg-white py-8 px-4 shadow-card sm:rounded-2xl sm:px-10 border border-neutral-100">
@@ -85,7 +93,7 @@ export const RegisterPage = () => {
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-medium text-neutral-700">Full Name</label>
+              <label className="block text-sm font-medium text-neutral-700">{t('auth.fullName')}</label>
               <div className="mt-1.5 relative rounded-xl shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <User className="h-5 w-5 text-neutral-400" />
@@ -103,7 +111,7 @@ export const RegisterPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700">Email address</label>
+              <label className="block text-sm font-medium text-neutral-700">{t('auth.email')}</label>
               <div className="mt-1.5 relative rounded-xl shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Mail className="h-5 w-5 text-neutral-400" />
@@ -121,7 +129,7 @@ export const RegisterPage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-neutral-700">Role</label>
+              <label className="block text-sm font-medium text-neutral-700">{t('auth.role')}</label>
               <div className="mt-1.5 relative rounded-xl shadow-sm">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Shield className="h-5 w-5 text-neutral-400" />
@@ -132,15 +140,15 @@ export const RegisterPage = () => {
                   onChange={handleChange}
                   className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 text-neutral-900 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
                 >
-                  <option value="citizen">Citizen</option>
-                  <option value="officer">Officer</option>
+                  <option value="citizen">{language === 'en' ? 'Citizen' : 'குடிமகன்'}</option>
+                  <option value="officer">{language === 'en' ? 'Officer' : 'அதிகாரி'}</option>
                 </select>
               </div>
             </div>
 
             {formData.role === 'officer' && (
               <div className="animate-fade-in">
-                <label className="block text-sm font-medium text-neutral-700">Department</label>
+                <label className="block text-sm font-medium text-neutral-700">{t('auth.department')}</label>
                 <div className="mt-1.5 relative rounded-xl shadow-sm">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Building className="h-5 w-5 text-neutral-400" />
@@ -152,9 +160,9 @@ export const RegisterPage = () => {
                     className="block w-full rounded-xl border-neutral-300 pl-10 py-2.5 text-neutral-900 focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-neutral-50 hover:bg-white transition-colors"
                     required
                   >
-                    <option value="">Select Department</option>
+                    <option value="">{language === 'en' ? 'Select Department' : 'துறையைத் தேர்ந்தெடுக்கவும்'}</option>
                     {departments.map(dept => (
-                      <option key={dept} value={dept}>{dept}</option>
+                      <option key={dept} value={dept}>{language === 'en' ? dept : (translations.ta.categories?.[dept] || dept)}</option>
                     ))}
                   </select>
                 </div>
@@ -163,7 +171,7 @@ export const RegisterPage = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-neutral-700">Password</label>
+                <label className="block text-sm font-medium text-neutral-700">{t('auth.password')}</label>
                 <div className="mt-1.5 relative rounded-xl shadow-sm">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Lock className="h-5 w-5 text-neutral-400" />
@@ -187,7 +195,7 @@ export const RegisterPage = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-neutral-700">Confirm</label>
+                <label className="block text-sm font-medium text-neutral-700">{t('auth.confirmPassword')}</label>
                 <div className="mt-1.5 relative rounded-xl shadow-sm">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <Lock className="h-5 w-5 text-neutral-400" />
@@ -217,16 +225,16 @@ export const RegisterPage = () => {
               disabled={loading}
               className="mt-6 flex w-full justify-center items-center gap-2 rounded-xl border border-transparent bg-primary-600 py-3 px-4 text-sm font-semibold text-white shadow-soft hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
             >
-              {loading ? 'Creating Account...' : 'Register'}
+              {loading ? t('auth.registering') : t('auth.registerBtn')}
               {!loading && <ArrowRight className="h-4 w-4" />}
             </button>
           </form>
         </div>
         
         <p className="mt-8 text-center text-sm text-neutral-500">
-          Already have an account?{' '}
+          {t('auth.alreadyAccount')}{' '}
           <Link to="/login" className="font-semibold leading-6 text-primary-600 hover:text-primary-500">
-            Login here
+            {t('auth.loginHere')}
           </Link>
         </p>
       </div>

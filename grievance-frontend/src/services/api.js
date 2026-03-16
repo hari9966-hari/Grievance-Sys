@@ -27,7 +27,9 @@ export const complaintAPI = {
   updateComplaintStatus: (id, data) => axiosInstance.put(`/complaints/${id}`, data),
   supportComplaint: (complaintId) => axiosInstance.post(`/complaints/${complaintId}/support`),
   getStats: () => axiosInstance.get('/complaints/stats/dashboard'),
-  markAsFake: (id) => axiosInstance.post(`/complaints/${id}/mark-fake`)
+  markAsFake: (id) => axiosInstance.post(`/complaints/${id}/mark-fake`),
+  verifyResolution: (id, data) => axiosInstance.post(`/complaints/${id}/verify`, data),
+  submitRating: (id, data) => axiosInstance.post(`/complaints/${id}/rate`, data)
 };
 
 /**
@@ -52,7 +54,32 @@ export const adminAPI = {
   // Analytics
   getAnalytics: () => axiosInstance.get('/admin/analytics'),
   getEscalationReport: () => axiosInstance.get('/admin/escalation-report'),
+  getEscalationWatch: () => axiosInstance.get('/admin/escalation-watch'),
+  getHeatmapData: () => axiosInstance.get('/admin/heatmap-data'),
+
+  // Leaderboard
+  getLeaderboard: () => axiosInstance.get('/admin/officers/leaderboard'),
 
   // User Management
   penalizeUser: (id, data) => axiosInstance.post(`/admin/users/${id}/penalize`, data)
 };
+
+/**
+ * Notification API calls
+ */
+
+export const notificationAPI = {
+  getNotifications: (params) => axiosInstance.get('/notifications', { params }),
+  markAsRead: (id) => axiosInstance.put(`/notifications/${id}/read`),
+  markAllAsRead: () => axiosInstance.put('/notifications/read-all')
+};
+
+/**
+ * System/Public API calls
+ */
+
+export const systemAPI = {
+  getStats: () => axiosInstance.get('/system/stats')
+};
+
+

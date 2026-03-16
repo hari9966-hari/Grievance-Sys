@@ -14,7 +14,10 @@ const {
   forceCloseComplaint,
   getAnalytics,
   penalizeUser,
-  getEscalationReport
+  getEscalationReport,
+  getEscalationWatch,
+  getHeatmapData,
+  getLeaderboard
 } = require('../controllers/adminController');
 
 /**
@@ -110,6 +113,15 @@ router.get('/analytics', getAnalytics);
 
 // Get Escalation Report
 router.get('/escalation-report', getEscalationReport);
+
+// Get Escalation Watch
+router.get('/escalation-watch', getEscalationWatch);
+
+// Get Heatmap Data
+router.get('/heatmap-data', getHeatmapData);
+
+// Get Leaderboard
+router.get('/leaderboard', getLeaderboard);
 
 /**
  * User Management

@@ -1,17 +1,20 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { 
   Home, 
   PlusCircle, 
   LogOut,
   Users,
   BarChart2,
-  AlertCircle
+  AlertCircle,
+  Globe
 } from 'lucide-react';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const { user, logout } = useAuth();
+  const { language, toggleLanguage, t } = useLanguage();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -20,19 +23,19 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   };
 
   const citizenLinks = [
-    { to: '/citizen/dashboard', icon: Home, label: 'Dashboard' },
-    { to: '/citizen/create-complaint', icon: PlusCircle, label: 'Raise Complaint' },
+    { to: '/citizen/dashboard', icon: Home, label: t('nav.dashboard') },
+    { to: '/citizen/create-complaint', icon: PlusCircle, label: t('nav.createComplaint') },
   ];
 
   const officerLinks = [
-    { to: '/officer/dashboard', icon: Home, label: 'Dashboard' },
-    { to: '/officer/performance', icon: BarChart2, label: 'Performance' },
+    { to: '/officer/dashboard', icon: Home, label: t('nav.dashboard') },
+    { to: '/officer/performance', icon: BarChart2, label: t('nav.performance') },
   ];
 
   const adminLinks = [
-    { to: '/admin/dashboard', icon: Home, label: 'Dashboard' },
-    { to: '/admin/officers', icon: Users, label: 'Manage Officers' },
-    { to: '/admin/analytics', icon: BarChart2, label: 'Analytics' },
+    { to: '/admin/dashboard', icon: Home, label: t('nav.dashboard') },
+    { to: '/admin/officers', icon: Users, label: t('nav.officers') },
+    { to: '/admin/analytics', icon: BarChart2, label: t('nav.analytics') },
   ];
 
   let links = [];
@@ -60,7 +63,19 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           {/* Logo area */}
           <div className="h-16 flex items-center px-6 border-b border-neutral-200">
             <AlertCircle className="h-8 w-8 text-primary-600 mr-3" />
-            <span className="text-lg font-bold text-neutral-900">Grievance Sys</span>
+            <span className="text-lg font-bold text-neutral-900">
+              {language === 'en' ? 'Grievance Sys' : 'குறைதீர்ப்பு'}
+            </span>
+          </div>
+
+          <div className="px-4 py-3 border-b border-neutral-100">
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center w-full px-3 py-2 text-sm font-medium text-neutral-600 rounded-xl hover:bg-neutral-50 transition-colors border border-neutral-100 shadow-sm"
+            >
+              <Globe className="mr-3 h-4 w-4 text-primary-500" />
+              {language === 'en' ? 'தமிழ் (Tamil)' : 'English'}
+            </button>
           </div>
 
           {/* Navigation Links */}
@@ -100,7 +115,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               className="flex items-center w-full px-3 py-2.5 text-sm font-medium text-danger-600 rounded-xl hover:bg-danger-50 transition-colors"
             >
               <LogOut className="mr-3 h-5 w-5" strokeWidth={2} />
-              Logout
+              {t('nav.logout')}
             </button>
           </div>
         </div>

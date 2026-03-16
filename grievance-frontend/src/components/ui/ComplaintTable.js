@@ -1,18 +1,21 @@
 import React from 'react';
 import StatusBadge from './StatusBadge';
 import { format } from 'date-fns';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ComplaintTable({ 
   complaints, 
   onRowClick, 
   actions,
-  emptyStateMessage = "No complaints found." 
+  emptyStateMessage = "" 
 }) {
+  const { language, t } = useLanguage();
+  const emptyMessage = emptyStateMessage || (language === 'en' ? "No complaints found." : "புகார்கள் எதுவும் இல்லை.");
   
   if (!complaints || complaints.length === 0) {
     return (
       <div className="bg-white rounded-2xl p-12 text-center border border-neutral-100 shadow-soft">
-        <p className="text-neutral-500">{emptyStateMessage}</p>
+        <p className="text-neutral-500">{emptyMessage}</p>
       </div>
     );
   }
@@ -24,20 +27,20 @@ export default function ComplaintTable({
           <thead className="bg-neutral-50">
             <tr>
               <th scope="col" className="px-6 py-4 text-left font-semibold text-neutral-600 tracking-wider">
-                ID
+                {language === 'en' ? 'ID' : 'அடையாளம்'}
               </th>
               <th scope="col" className="px-6 py-4 text-left font-semibold text-neutral-600 tracking-wider">
-                Title & Category
+                {language === 'en' ? 'Title & Category' : 'தலைப்பு மற்றும் வகை'}
               </th>
               <th scope="col" className="px-6 py-4 text-left font-semibold text-neutral-600 tracking-wider">
-                Date & Deadline
+                {language === 'en' ? 'Date & Deadline' : 'தேதி மற்றும் காலக்கெடு'}
               </th>
               <th scope="col" className="px-6 py-4 text-left font-semibold text-neutral-600 tracking-wider">
-                Status
+                {language === 'en' ? 'Status' : 'நிலை'}
               </th>
               {actions && (
                 <th scope="col" className="px-6 py-4 text-right font-semibold text-neutral-600 tracking-wider">
-                  Actions
+                  {language === 'en' ? 'Actions' : 'நடவடிக்கைகள்'}
                 </th>
               )}
             </tr>

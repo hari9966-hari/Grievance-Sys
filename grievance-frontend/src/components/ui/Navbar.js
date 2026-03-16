@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu, Bell } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { Menu } from 'lucide-react';
+import NotificationDropdown from './NotificationDropdown';
 
 export default function Navbar({ toggleSidebar }) {
   const { user } = useAuth();
@@ -18,11 +19,7 @@ export default function Navbar({ toggleSidebar }) {
       </div>
 
       <div className="flex items-center space-x-4">
-        <button className="text-neutral-400 hover:text-neutral-500 relative p-2 rounded-full hover:bg-neutral-100 transition-all group">
-          <span className="absolute top-2 right-2 block h-2 w-2 rounded-full bg-danger-500 ring-2 ring-white group-hover:scale-125 transition-transform" />
-          <span className="sr-only">View notifications</span>
-          <Bell className="h-5 w-5" aria-hidden="true" />
-        </button>
+        <NotificationDropdown />
         
         <div className="hidden sm:flex items-center gap-3 pl-4 border-l border-neutral-100">
           <div className="text-right">
