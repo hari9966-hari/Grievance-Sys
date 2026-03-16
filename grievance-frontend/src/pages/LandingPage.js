@@ -12,23 +12,23 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-neutral-900 tracking-tight">
+              <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-primary-600" />
+              <span className="text-lg sm:text-xl font-bold text-neutral-900 tracking-tight">
                 {language === 'en' ? 'Grievance Sys' : 'குறைதீர்ப்பு அமைப்பு'}
               </span>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button 
                 onClick={toggleLanguage}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-neutral-200 text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors"
+                className="flex items-center gap-1.5 px-2 py-1.5 sm:px-3 sm:py-1.5 rounded-xl border border-neutral-200 text-xs sm:text-sm font-medium text-neutral-600 hover:bg-neutral-50 transition-colors"
               >
-                <Globe className="h-4 w-4" />
+                <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 {language === 'en' ? 'தமிழ்' : 'English'}
               </button>
-              <Link to="/login" className="text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
+              <Link to="/login" className="text-xs sm:text-sm font-medium text-neutral-600 hover:text-neutral-900 transition-colors">
                 {t('nav.login')}
               </Link>
-              <Link to="/register" className="text-sm font-medium bg-primary-600 text-white px-4 py-2 rounded-xl hover:bg-primary-700 transition-all shadow-soft hover:shadow-card hover:-translate-y-0.5">
+              <Link to="/register" className="text-xs sm:text-sm font-medium bg-primary-600 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-xl hover:bg-primary-700 transition-all shadow-soft hover:shadow-card">
                 {t('nav.register')}
               </Link>
             </div>
@@ -37,46 +37,46 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-sm font-medium mb-8 animate-fade-in">
-          <span className="flex h-2 w-2 rounded-full bg-primary-600"></span>
+      <section className="pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-50 text-primary-700 text-xs sm:text-sm font-medium mb-6 sm:mb-8 animate-fade-in">
+          <span className="flex h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-primary-600"></span>
           {language === 'en' ? 'Citizen First Initiative' : 'குடிமக்களுக்கு முன்னுரிமை முன்னெடுப்பு'}
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold text-neutral-900 tracking-tight mb-6 animate-slide-in">
+        <h1 className="text-3xl sm:text-5xl md:text-6xl font-bold text-neutral-900 tracking-tight mb-4 sm:mb-6 animate-slide-in leading-tight">
           {language === 'en' ? (
-            <>Transparent. Accountable. <br className="hidden md:block"/>
+            <>Transparent. Accountable. <br className="hidden sm:block"/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">
               Time-Bound Resolution.
             </span></>
           ) : (
-            <>வெளிப்படையானது. பொறுப்பானது. <br className="hidden md:block"/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">
+            <>வெளிப்படையானது. பொறுப்பானது. <br className="hidden sm:block"/>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400 whitespace-normal">
               காலவரையறைக்குட்பட்ட தீர்வு.
             </span></>
           )}
         </h1>
-        <p className="text-xl text-neutral-500 max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <p className="text-base sm:text-xl text-neutral-500 max-w-2xl mx-auto mb-8 sm:mb-10 animate-fade-in px-2" style={{ animationDelay: '0.1s' }}>
           {t('landing.subtitle')}
         </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 animate-fade-in max-w-sm sm:max-w-none mx-auto" style={{ animationDelay: '0.2s' }}>
           <Link 
             to="/register" 
-            className="flex items-center justify-center gap-2 bg-primary-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-primary-700 transition-all shadow-card hover:-translate-y-1"
+            className="flex items-center justify-center gap-2 bg-primary-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-primary-700 transition-all shadow-card"
           >
             {t('nav.createComplaint')}
-            <ArrowRight className="h-5 w-5" />
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </Link>
           <Link 
             to="/login" 
-            className="flex items-center justify-center gap-2 bg-white text-neutral-700 border border-neutral-200 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-neutral-50 transition-all shadow-soft hover:-translate-y-1"
+            className="flex items-center justify-center gap-2 bg-white text-neutral-700 border border-neutral-200 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-neutral-50 transition-all shadow-soft"
           >
             {language === 'en' ? 'Track Status' : 'நிலையை அறிய'}
           </Link>
           <Link 
             to="/transparency" 
-            className="flex items-center justify-center gap-2 bg-neutral-900 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-black transition-all shadow-card hover:-translate-y-1"
+            className="flex items-center justify-center gap-2 bg-neutral-900 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg hover:bg-black transition-all shadow-card"
           >
-            <ShieldCheck className="h-5 w-5" />
+            <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5" />
             {language === 'en' ? 'Transparency Hub' : 'வெளிப்படைத்தன்மை மையம்'}
           </Link>
         </div>
