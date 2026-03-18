@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -6,25 +6,27 @@ import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/ui/DashboardLayout';
 import ToastContainer from './components/ui/ToastContainer';
+import Loading from './components/ui/Loading';
 
-// Pages
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import CitizenDashboard from './pages/CitizenDashboard';
-import CreateComplaint from './pages/CreateComplaint';
-import ComplaintDetails from './pages/ComplaintDetails';
-import OfficerDashboard from './pages/OfficerDashboard';
-import OfficerPerformance from './pages/OfficerPerformance';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminOfficers from './pages/AdminOfficers';
-import AdminAnalytics from './pages/AdminAnalytics';
-import PublicStats from './pages/PublicStats';
+// Lazy Loaded Pages
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const CitizenDashboard = lazy(() => import('./pages/CitizenDashboard'));
+const CreateComplaint = lazy(() => import('./pages/CreateComplaint'));
+const ComplaintDetails = lazy(() => import('./pages/ComplaintDetails'));
+const OfficerDashboard = lazy(() => import('./pages/OfficerDashboard'));
+const OfficerPerformance = lazy(() => import('./pages/OfficerPerformance'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const AdminOfficers = lazy(() => import('./pages/AdminOfficers'));
+const AdminAnalytics = lazy(() => import('./pages/AdminAnalytics'));
+const PublicStats = lazy(() => import('./pages/PublicStats'));
 
 function AppRoutes() {
   return (
-    <Routes>
-      {/* Public Routes */}
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        {/* Public Routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -117,7 +119,8 @@ function AppRoutes() {
           </div>
         }
       />
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }
 
