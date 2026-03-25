@@ -15,11 +15,19 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-soft;
+    @apply bg-white/80 backdrop-blur-lg border border-white/40 shadow-glass;
   }
   
   .glass-dark {
-    @apply bg-neutral-900/70 backdrop-blur-md border border-neutral-700/50 shadow-soft;
+    @apply bg-neutral-900/80 backdrop-blur-lg border border-neutral-700/50 shadow-glass;
+  }
+
+  .glass-card {
+    @apply bg-white/95 backdrop-blur-xl border border-white/60 shadow-card hover:shadow-lg transition-all duration-300 rounded-2xl;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
   }
 }
 

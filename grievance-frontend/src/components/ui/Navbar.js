@@ -7,11 +7,11 @@ export default function Navbar({ toggleSidebar }) {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between bg-white/80 backdrop-blur-md border-b border-neutral-200 px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-30 flex h-16 sm:h-20 items-center justify-between glass border-b border-white/60 px-4 sm:px-6 lg:px-8 transition-all duration-300">
       <div className="flex items-center">
         <button
           onClick={toggleSidebar}
-          className="text-neutral-500 hover:text-neutral-900 focus:outline-none lg:hidden mr-4 p-2 rounded-lg hover:bg-neutral-100 transition-all"
+          className="text-neutral-500 hover:text-primary-600 focus:outline-none lg:hidden mr-4 p-2 rounded-xl hover:bg-primary-50 active:bg-primary-100 transition-all"
         >
           <span className="sr-only">Open sidebar</span>
           <Menu className="h-6 w-6" aria-hidden="true" />

@@ -62,15 +62,16 @@ const EscalationWatch = () => {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 overflow-hidden">
-      <div className="p-6 border-b border-neutral-50 flex justify-between items-center bg-danger-50/30">
+    <div className="glass-card overflow-hidden">
+      <div className="p-6 border-b border-warning-100/30 flex justify-between items-center bg-warning-50/10">
         <div className="flex items-center gap-3">
           <AlertCircle className="w-5 h-5 text-danger-600" />
           <h2 className="text-lg font-bold text-neutral-900">
             {language === 'en' ? 'Escalation Watch' : 'கண்காணிப்புப் பட்டியல்'}
           </h2>
         </div>
-        <span className="px-2.5 py-1 rounded-full bg-danger-100 text-danger-700 text-xs font-bold ring-1 ring-inset ring-danger-200">
+        <span className="px-3 py-1.5 rounded-full bg-danger-100 text-danger-700 text-xs font-bold shadow-sm flex items-center gap-1.5 animate-pulse-slow">
+          <span className="w-1.5 h-1.5 bg-danger-500 rounded-full animate-ping"></span>
           {watchList.length} {language === 'en' ? 'Urgent' : 'அவசரம்'}
         </span>
       </div>
@@ -81,7 +82,7 @@ const EscalationWatch = () => {
             <div 
               key={complaint._id}
               onClick={() => navigate(`/complaints/${complaint._id}`)}
-              className="p-4 hover:bg-neutral-50 transition-colors cursor-pointer group"
+              className="p-5 hover:bg-white/50 border-white/50 border-b last:border-0 transition-colors cursor-pointer group backdrop-blur-[2px]"
             >
               <div className="flex justify-between items-start mb-2">
                 <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${getPriorityColor(complaint.priority)}`}>
@@ -110,7 +111,7 @@ const EscalationWatch = () => {
                     <span>{complaint.assignedTo?.name || (language === 'en' ? 'Unassigned' : 'ஒதுக்கப்படவில்லை')}</span>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-primary-400 transition-all group-hover:translate-x-1" />
+                <ChevronRight className="w-4 h-4 text-neutral-300 group-hover:text-primary-500 transition-all group-hover:translate-x-2" />
               </div>
             </div>
           ))

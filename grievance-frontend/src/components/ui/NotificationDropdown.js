@@ -110,8 +110,8 @@ const NotificationDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-card border border-neutral-100 z-50 overflow-hidden animate-fade-in">
-          <div className="p-4 border-b border-neutral-50 flex justify-between items-center bg-neutral-50/50">
+        <div className="absolute right-0 mt-2 w-80 glass-card backdrop-blur-2xl z-50 overflow-hidden animate-slide-up border border-white/40">
+          <div className="p-4 border-b border-white/50 flex justify-between items-center bg-white/40">
             <h3 className="font-bold text-neutral-900">{t('notifications.title')}</h3>
             {unreadCount > 0 && (
               <button
@@ -130,8 +130,8 @@ const NotificationDropdown = () => {
                   <div
                     key={notification._id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`p-4 hover:bg-neutral-50 transition-colors cursor-pointer relative group ${
-                      !notification.isRead ? 'bg-primary-50/30' : ''
+                    className={`p-4 hover:bg-white/60 transition-colors cursor-pointer relative group border-b border-white/20 last:border-0 ${
+                      !notification.isRead ? 'bg-primary-50/40' : ''
                     }`}
                   >
                     {!notification.isRead && (
@@ -175,15 +175,15 @@ const NotificationDropdown = () => {
               </div>
             ) : (
               <div className="py-12 px-4 text-center">
-                <div className="bg-neutral-50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Bell className="w-6 h-6 text-neutral-300" />
+                <div className="bg-white/50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                  <Bell className="w-6 h-6 text-neutral-400" />
                 </div>
-                <p className="text-sm text-neutral-500">{t('notifications.empty')}</p>
+                <p className="text-sm text-neutral-500 font-medium">{t('notifications.empty')}</p>
               </div>
             )}
           </div>
 
-          <div className="p-3 border-t border-neutral-50 text-center bg-neutral-50/30">
+          <div className="p-3 border-t border-white/50 text-center bg-white/40">
             <button className="text-xs font-bold text-neutral-500 hover:text-primary-600 transition-colors">
               {t('notifications.viewAll')}
             </button>

@@ -55,7 +55,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
       {/* Sidebar sidebar */}
       <aside 
-        className={`fixed top-0 left-0 z-50 h-screen w-64 bg-white border-r border-neutral-200 transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-screen w-64 glass-card border-r-0 rounded-none transition-transform duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -86,10 +86,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                 to={link.to}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center px-3 py-2.5 text-sm font-semibold rounded-xl transition-all duration-200 ${
+                  `flex items-center px-3 py-3 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActive
-                      ? 'bg-primary-600 text-white shadow-soft shadow-primary-200 translate-x-1'
-                      : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                      ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/30 translate-x-1'
+                      : 'text-neutral-600 hover:bg-primary-50 hover:text-primary-700 hover:translate-x-1'
                   }`
                 }
               >

@@ -174,7 +174,7 @@ export const CreateComplaint = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-soft p-6 sm:p-8 border border-neutral-100 space-y-6">
+      <form onSubmit={handleSubmit} className="glass-card p-6 sm:p-8 space-y-6">
         
         <div className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
           {/* Title Box */}

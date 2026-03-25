@@ -52,7 +52,7 @@ const ComplaintHeatmap = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl h-[400px] flex items-center justify-center border border-neutral-100 shadow-soft">
+      <div className="glass-card h-[400px] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
       </div>
     );
@@ -71,7 +71,7 @@ const ComplaintHeatmap = () => {
   const center = getCenter();
 
   return (
-    <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 overflow-hidden">
+    <div className="glass-card overflow-hidden">
       <div className="p-4 border-b border-neutral-50 bg-neutral-50/50">
         <h2 className="text-lg font-bold text-neutral-900">
           {language === 'en' ? 'Complaint Hotspots' : 'புகார் மையங்கள்'}
@@ -110,7 +110,7 @@ const ComplaintHeatmap = () => {
         </MapContainer>
       </div>
       
-      <div className="p-4 bg-white flex items-center gap-6 justify-center border-t border-neutral-50">
+      <div className="p-4 bg-transparent flex items-center gap-6 justify-center border-t border-neutral-50/50">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-danger-500"></div>
           <span className="text-xs font-semibold text-neutral-600">{language === 'en' ? 'Critical' : 'மிகவும் முக்கியமானது'}</span>

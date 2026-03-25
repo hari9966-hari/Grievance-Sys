@@ -133,7 +133,7 @@ const ComplaintDetails = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Complaint Details */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 p-6 sm:p-8">
+          <div className="glass-card p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 mb-2">
@@ -220,7 +220,7 @@ const ComplaintDetails = () => {
 
           {/* Evidence/Attachments - Conditionally Rendered */}
           {complaint.image && (
-            <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 p-6 overflow-hidden">
+            <div className="glass-card p-6 overflow-hidden">
               <h2 className="text-lg font-semibold text-neutral-900 mb-4 flex items-center">
                 <ImageIcon className="w-5 h-5 mr-2 text-neutral-400" />
                 {t('details.evidence')}
@@ -254,7 +254,7 @@ const ComplaintDetails = () => {
 
         {/* Right Column: Timeline & Side Info */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 p-6">
+          <div className="glass-card p-6">
             <h2 className="text-lg font-semibold text-neutral-900 mb-6">{t('details.history')}</h2>
             <Timeline items={timelineEvents} />
           </div>

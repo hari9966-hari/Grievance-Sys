@@ -55,7 +55,7 @@ const VerificationRating = ({ complaintId, onUpdate }) => {
   if (step === 'completed') return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-soft border border-neutral-100 p-6 mt-6 animate-slide-in-right">
+    <div className="glass-card p-6 mt-6 animate-slide-in-right">
       {step === 'verify' && (
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-primary-600 font-semibold">
@@ -73,7 +73,7 @@ const VerificationRating = ({ complaintId, onUpdate }) => {
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              className="w-full rounded-xl border-neutral-200 p-3 text-sm focus:ring-primary-500 focus:border-primary-500 bg-neutral-50"
+              className="w-full rounded-xl border-neutral-200 p-3 text-sm focus:ring-primary-500 focus:border-primary-500 bg-white/50 backdrop-blur-sm hover:bg-white transition-colors"
               placeholder="Tell us why the issue is still not resolved..."
               rows="3"
             />
@@ -133,7 +133,7 @@ const VerificationRating = ({ complaintId, onUpdate }) => {
             <textarea
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              className="w-full rounded-xl border-neutral-200 p-3 text-sm focus:ring-primary-500 focus:border-primary-500 bg-neutral-50"
+              className="w-full rounded-xl border-neutral-200 p-3 text-sm focus:ring-primary-500 focus:border-primary-500 bg-white/50 backdrop-blur-sm hover:bg-white transition-colors"
               placeholder="What did we do well? What can we improve?"
               rows="3"
             />
