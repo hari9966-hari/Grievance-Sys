@@ -72,22 +72,22 @@ export default function LandingPage() {
           {language === 'en' ? 'Next-Gen Public Service Platform' : 'அடுத்த தலைமுறை பொது சேவை தளம்'}
         </div>
         
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-neutral-900 tracking-tight mb-8 animate-slide-in leading-[1.1]">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-neutral-900 tracking-tight mb-6 animate-slide-in leading-[1.1]">
           {language === 'en' ? (
-            <>Smart Grievance Management with <br className="hidden lg:block"/>
+            <>Track. Escalate. <br className="hidden lg:block"/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">
-              Accountability & Transparency
+              Resolve with Accountability.
             </span></>
           ) : (
-            <>விவேகமான குறைதீர்ப்பு மேலாண்மை <br className="hidden lg:block"/>
+            <>கண்காணிக்கவும். மேல்முறையீடு செய்யவும். <br className="hidden lg:block"/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-primary-400">
-              பொறுப்பு மற்றும் வெளிப்படைத்தன்மையுடன்
+              பொறுப்புடன் தீர்க்கவும்.
             </span></>
           )}
         </h1>
         
         <p className="text-lg sm:text-2xl text-neutral-500 max-w-3xl mx-auto mb-12 animate-fade-in leading-relaxed font-medium">
-          {language === 'en' ? 'Report issues, track real-time resolutions, and ensure every public servant is held to a strict time-bound standard.' : 'கவலைகளைப் புகாரளிக்கவும், நிகழ்நேரத் தீர்வுகளைக் கண்காணிக்கவும், மற்றும் ஒவ்வொரு பொது ஊழியரும் பொறுப்பாக்கப்படுவதை உறுதி செய்யவும்.'}
+          {language === 'en' ? 'A modern SaaS platform designed to ensure every citizen grievance is addressed swiftly, transparently, and automatically escalated if delayed.' : 'ஒவ்வொரு குடிமகனின் குறையும் உடனடியாகவும், வெளிப்படையாகவும், தாமதமானால் தானாகவே உயர் அதிகாரிகளுக்குச் செல்லவும் வடிவமைக்கப்பட்ட ஒரு நவீன மென்பொருள் தளம்.'}
         </p>
 
         <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fade-in max-w-md sm:max-w-none mx-auto">

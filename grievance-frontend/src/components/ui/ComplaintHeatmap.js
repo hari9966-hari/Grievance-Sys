@@ -58,14 +58,9 @@ const ComplaintHeatmap = () => {
     );
   }
 
-  // Calculate center based on data points, fallback to Chennai
+  // Set default center to Coimbatore
   const getCenter = () => {
-    if (data && data.length > 0) {
-      const avgLat = data.reduce((sum, p) => sum + p.lat, 0) / data.length;
-      const avgLng = data.reduce((sum, p) => sum + p.lng, 0) / data.length;
-      return [avgLat, avgLng];
-    }
-    return [13.0827, 80.2707]; // Chennai default
+    return [11.0168, 76.9558]; // Coimbatore
   };
 
   const center = getCenter();
